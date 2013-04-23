@@ -3,6 +3,7 @@ OpenSFZ
 
 An Open SFZ player based on SFZero, without the Juce dependency
 
+Note, this is still in development and doesn't work yet.
 
 
 License
