@@ -1,6 +1,7 @@
 #ifndef SF2Sound_h
 #define SF2Sound_h
 
+#include "OpenSFZ.h"
 #include "SFZSound.h"
 
 
@@ -15,12 +16,12 @@ class SF2Sound : public SFZSound {
 			double* progressVar = NULL, Thread* thread = NULL);
 
 		struct Preset {
-			String	name;
+            std::string	name;
 			int    	bank;
 			int   	preset;
 			OwnedArray<SFZRegion>	regions;
 
-			Preset(String nameIn, int bankIn, int presetIn)
+			Preset(std::string nameIn, int bankIn, int presetIn)
 				: name(nameIn), bank(bankIn), preset(presetIn) {}
 			~Preset() {}
 
@@ -31,7 +32,7 @@ class SF2Sound : public SFZSound {
 		void	addPreset(Preset* preset);
 
 		int	numSubsounds();
-		String	subsoundName(int whichSubsound);
+        std::string	subsoundName(int whichSubsound);
 		void	useSubsound(int whichSubsound);
 		int 	selectedSubsound();
 
@@ -40,7 +41,7 @@ class SF2Sound : public SFZSound {
 
 	protected:
 		OwnedArray<Preset>	presets;
-		HashMap<unsigned long, SFZSample*>	samplesByRate;
+        std::map<unsigned long, SFZSample*>	samplesByRate;
 		int               	selectedPreset;
 	};
 

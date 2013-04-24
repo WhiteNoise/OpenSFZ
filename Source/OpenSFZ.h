@@ -13,6 +13,10 @@
 #include <vector>
 #include <map>
 
+#include <stdio.h>
+
+#include <fstream>
+
 #include "Synthesizer.h"
 #include "SFZAudioBuffer.h"
 

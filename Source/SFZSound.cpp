@@ -2,8 +2,8 @@
 #include "SFZRegion.h"
 #include "SFZSample.h"
 #include "SFZReader.h"
-#include "SFZDebug.h"
 
+using namespace std;
 
 SFZSound::SFZSound(const File& fileIn)
 	: file(fileIn)
@@ -16,11 +16,15 @@ SFZSound::~SFZSound()
 	int numRegions = regions.size();
 	for (int i = 0; i < numRegions; ++i) {
 		delete regions[i];
-		regions.set(i, NULL);
-		}
+    }
+    
+    regions.clear();
+    
 
-	for (HashMap<String,SFZSample*>::Iterator i(samples); i.next();)
-		delete i.getValue();
+	for (map<string, SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++)
+    {
+		delete iter->second;
+    }
 }
 
 
@@ -39,12 +43,15 @@ bool SFZSound::appliesToChannel(const int midiChannel)
 
 void SFZSound::addRegion(SFZRegion* region)
 {
-	regions.add(region);
+	regions.push_back(region);
 }
 
 
-SFZSample* SFZSound::addSample(String path, String defaultPath)
+SFZSample* SFZSound::addSample(string path, string defaultPath)
 {
+    // FIXME: needs a little work here to replace File.
+    
+    
 	path = path.replaceCharacter('\\', '/');
 	defaultPath = defaultPath.replaceCharacter('\\', '/');
 	File sampleFile;
@@ -83,9 +90,7 @@ void SFZSound::loadRegions()
 }
 
 
-void SFZSound::loadSamples(
-	AudioFormatManager* formatManager,
-	double* progressVar, Thread* thread)
+void SFZSound::loadSamples(	double* progressVar)
 {
 	if (progressVar)
 		*progressVar = 0.0;
@@ -93,16 +98,17 @@ void SFZSound::loadSamples(
 	double numSamplesLoaded = 1.0, numSamples = samples.size();
 	for (HashMap<String,SFZSample*>::Iterator i(samples); i.next();) {
 		SFZSample* sample = i.getValue();
-		bool ok = sample->load(formatManager);
+		bool ok = sample->load();
 		if (!ok)
 			addError("Couldn't load sample \"" + sample->getShortName() + "\"");
 
 		numSamplesLoaded += 1.0;
 		if (progressVar)
 			*progressVar = numSamplesLoaded / numSamples;
-		if (thread && thread->threadShouldExit())
-			return;
-		}
+        
+		//if (thread && thread->threadShouldExit())
+		//	return;
+		//}
 
 	if (progressVar)
 		*progressVar = 1.0;

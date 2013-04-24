@@ -2,18 +2,19 @@
 #define SFZSample_h
 
 #include "OpenSFZ.h"
+#include "SFZAudioReader.h"
 
 class SFZSample {
 	public:
-		SFZSample(const File& fileIn)
-			: loopStart(0), loopEnd(0), file(fileIn), buffer(NULL) {}
+    SFZSample(const std::string& fileIn)
+			: loopStart(0), loopEnd(0), fileName(fileIn), buffer(NULL) {}
 		SFZSample(double sampleRateIn)
 			: sampleLength(0), loopStart(0), loopEnd(0),
 			  buffer(NULL), sampleRate(sampleRateIn) {}
 		~SFZSample();
 
-		bool	load(AudioFormatManager* formatManager);
-		File	getFile() { return file; }
+		bool	load();
+
 		SFZAudioBuffer*	getBuffer() { return buffer; }
 		double	getSampleRate() { return sampleRate; }
 		std::string	getShortName();
@@ -23,14 +24,16 @@ class SFZSample {
 
 		unsigned long	sampleLength, loopStart, loopEnd;
 
-#ifdef JUCE_DEBUG
+#ifdef DEBUG
 		void	checkIfZeroed(const char* where);
 #endif
 
 	protected:
-		File	file;
+        std::string fileName;
 		SFZAudioBuffer*	buffer;
 		double	sampleRate;
+    
+        SFZAudioReader loader;
 	};
 
 

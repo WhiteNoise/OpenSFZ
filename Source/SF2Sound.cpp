@@ -18,8 +18,8 @@ SF2Sound::~SF2Sound()
 
 	// The samples all share a single buffer, so make sure they don't all delete it.
 	SFZAudioBuffer* buffer = NULL;
-	for (HashMap<unsigned long, SFZSample*>::Iterator i(samplesByRate); i.next();)
-		buffer = i.getValue()->detachBuffer();
+	for (std::map<unsigned long, SFZSample*>::iterator iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
+		buffer = iter->second->detachBuffer();
 	delete buffer;
 }
 

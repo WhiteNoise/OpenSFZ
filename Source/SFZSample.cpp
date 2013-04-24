@@ -2,12 +2,18 @@
 
 
 
-bool SFZSample::load(AudioFormatManager* formatManager)
+bool SFZSample::load()
 {
     // A bunch of things needed here..
     
+    // FIXME: check for wav or ogg..?
+    loader.load(fileName);
+    buffer = loader.buffer;
     
+    //loopStart = loader.loopStart;
+    //loopEnd = loader.loopEnd;
     
+    /*
 	AudioFormatReader* reader = formatManager->createReaderFor(file);
 	if (reader == NULL)
 		return false;
@@ -24,6 +30,8 @@ bool SFZSample::load(AudioFormatManager* formatManager)
 		loopEnd = metadata->getValue("Loop0End", "0").getLargeIntValue();
 		}
 	delete reader;
+     */
+    
 	return true;
 }
 
@@ -36,7 +44,8 @@ SFZSample::~SFZSample()
 
 std::string SFZSample::getShortName()
 {
-	return file.getFileName();
+    // FIXME: this isn't short.
+	return fileName;
 }
 
 
@@ -57,23 +66,23 @@ SFZAudioBuffer* SFZSample::detachBuffer()
 
 void SFZSample::dump()
 {
-	char path[256];
-	file.getFullPathName().copyToUTF8(path, 256);
-	printf("%s\n", path);
+
+
+	printf("%s\n", fileName.c_str());
 }
 
 
-#ifdef JUCE_DEBUG
+#ifdef DEBUG
 void SFZSample::checkIfZeroed(const char* where)
 {
 	if (buffer == NULL) {
-		dbgprintf("SFZSample::checkIfZeroed(%s): no buffer!", where);
+		printf("SFZSample::checkIfZeroed(%s): no buffer!", where);
 		return;
 		}
 
 	int samplesLeft = buffer->getNumSamples();
 	unsigned long nonzero = 0, zero = 0;
-	float* p = buffer->getSampleData(0);
+	float* p = buffer->channels[0];
 	for (; samplesLeft > 0; --samplesLeft) {
 		if (*p++ == 0.0)
 			zero += 1;
@@ -81,9 +90,9 @@ void SFZSample::checkIfZeroed(const char* where)
 			nonzero += 1;
 		}
 	if (nonzero > 0)
-		dbgprintf("Buffer not zeroed at %s (%lu vs. %lu).", where, nonzero, zero);
+		printf("Buffer not zeroed at %s (%lu vs. %lu).", where, nonzero, zero);
 	else
-		dbgprintf("Buffer zeroed at %s!  (%lu zeros)", where, zero);
+		printf("Buffer zeroed at %s!  (%lu zeros)", where, zero);
 }
 #endif 	// JUCE_DEBUG
 

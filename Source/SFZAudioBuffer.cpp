@@ -11,6 +11,8 @@
 
 SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const int numSamples_)
 {
+    numSamples = numSamples_;
+    numChannels = numChannels_;
     int c = numChannels_;
     
     if(c > 2)

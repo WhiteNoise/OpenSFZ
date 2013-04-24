@@ -15,7 +15,7 @@ class SF2Reader {
 
 		void	read();
 		SFZAudioBuffer*	readSamples(
-			double* progressVar = NULL, Thread* thread = NULL);
+			double* progressVar = NULL);
 
 	protected:
 		SF2Sound*	sound;

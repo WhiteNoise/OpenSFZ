@@ -3,7 +3,6 @@
 
 #include <string.h>
 
-// Because Juce's String class always copies.
 
 
 class StringSlice {

@@ -156,7 +156,7 @@ void SF2Reader::read()
 
 
 SFZAudioBuffer* SF2Reader::readSamples(
-	double* progressVar, Thread* thread)
+	double* progressVar)
 {
 	static const unsigned long bufferSize = 32768;
 
@@ -222,12 +222,12 @@ SFZAudioBuffer* SF2Reader::readSamples(
 
 		if (progressVar)
 			*progressVar = (float) (numSamples - samplesLeft) / numSamples;
-		if (thread && thread->threadShouldExit()) {
-			delete buffer;
-			delete sampleBuffer;
-			return NULL;
-			}
-		}
+		//if (thread && thread->threadShouldExit()) {
+		//	delete buffer;
+		//	delete sampleBuffer;
+		//	return NULL;
+		//	}
+		//}
 	delete buffer;
 
 	if (progressVar)

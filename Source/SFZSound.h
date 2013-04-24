@@ -6,34 +6,32 @@
 
 class SFZSample;
 
-
+// File = path to .SFZ file?
 class SFZSound : public SynthesizerSound {
 	public:
 		SFZSound(const File& file);
-		~SFZSound();
+		virtual ~SFZSound();
 
 		bool	appliesToNote(const int midiNoteNumber);
 		bool	appliesToChannel(const int midiChannel);
 
 		void	addRegion(SFZRegion* region); 	// Takes ownership of the region.
-		SFZSample*	addSample(String path, String defaultPath = String::empty);
-		void	addError(const String& message);
+        SFZSample*	addSample(std::string path, std::string defaultPath = std::string(""));
+		void	addError(const std::string& message);
 		void	addUnsupportedOpcode(const std::string& opcode);
 
 		virtual void	loadRegions();
-		virtual void	loadSamples(
-			AudioFormatManager* formatManager,
-			double* progressVar = NULL, Thread* thread = NULL);
+		virtual void	loadSamples(double* progressVar = NULL);
 
 		SFZRegion*	getRegionFor(
 			int note, int velocity, SFZRegion::Trigger trigger = SFZRegion::attack);
 		int	getNumRegions();
 		SFZRegion*	regionAt(int index);
 
-		String	getErrorsString();
+		std::string	getErrorsString();
 
 		virtual int	numSubsounds();
-		virtual String	subsoundName(int whichSubsound);
+		virtual std::string	subsoundName(int whichSubsound);
 		virtual void	useSubsound(int whichSubsound);
 		virtual int 	selectedSubsound();
 
@@ -41,10 +39,10 @@ class SFZSound : public SynthesizerSound {
 
 	protected:
 		File 	file;
-		Array<SFZRegion*>	regions;
-		HashMap<String, SFZSample*>	samples;
-		StringArray      	errors;
-		HashMap<String, String>	unsupportedOpcodes;
+        std::vector<SFZRegion*>	regions;
+        std::map<std::string, SFZSample*>	samples;
+        std::vector<std::string>      	errors;
+        std::map<std::string, std::string>	unsupportedOpcodes;
 	};
 
 
