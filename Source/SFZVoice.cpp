@@ -1,3 +1,5 @@
+#include "OpenSFZ.h"
+
 #include "SFZVoice.h"
 #include "SFZSound.h"
 #include "SFZRegion.h"
@@ -303,7 +305,7 @@ void SFZVoice::calcPitchRatio()
 			adjustedPitch += wheel * region->bend_down / -100.0;
 		}
 	double targetFreq = noteHz(adjustedPitch);
-	double naturalFreq = MidiMessage::getMidiNoteInHertz(region->pitch_keycenter);
+	double naturalFreq = getMidiNoteInHertz(region->pitch_keycenter);
 	pitchRatio =
 		(targetFreq * region->sample->getSampleRate()) /
 		(naturalFreq * sampleRate);

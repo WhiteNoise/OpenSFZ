@@ -5,10 +5,11 @@
 //  Created by David Wallin on 4/23/13.
 //  Copyright (c) 2013 David Wallin. All rights reserved.
 //
+#include <stdio.h>
 
 #include "SFZAudioReader.h"
+#include "stb_vorbis.h"
 
-#include <stdio.h>
 
 using namespace std;
 
@@ -44,15 +45,14 @@ bool SFZAudioReader::loadOgg(string fileName) {
     length=myDataSize;
     mySampleRate=44100;
     
-    buffer = new SFZAudioBuffer(myChannels, myDataSizes);
+    buffer = new SFZAudioBuffer(myChannels, myDataSize);
     
     if (myChannels>1) {
         int position=0;
-        int channel=readChannel;
         for (int i=0;i<myDataSize;i++) {
-            for(j=0; j<myChannels; j++)
+            for(int j=0; j<myChannels; j++)
             {
-                buffers->channels[j][i] = (float)temp[position] / 32768.0f;
+                buffer->channels[j][i] = (float)temp[position] / 32768.0f;
                 position++;
             }
         }

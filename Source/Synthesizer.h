@@ -18,6 +18,7 @@ public:
     
     void setCurrentPlaybackSampleRate (double newRate);
     void clearCurrentNote();
+    int getCurrentlyPlayingNote() { return currentlyPlayingNote; };
 protected:
     double sampleRate;
     

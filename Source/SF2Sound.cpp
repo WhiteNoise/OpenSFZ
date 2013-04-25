@@ -52,11 +52,14 @@ void SF2Sound::loadSamples(
 {
 	SF2Reader reader(this, file);
 	SFZAudioBuffer* buffer = reader.readSamples(progressVar);
-	if (buffer) {
+	if (buffer)
+    {
 		// All the SFZSamples will share the buffer.
-		for (HashMap<unsigned long, SFZSample*>::Iterator i(samplesByRate); i.next();)
-			i.getValue()->setBuffer(buffer);
-		}
+        std::map<unsigned long, SFZSample*>::iterator iter;
+        
+		for (iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
+			iter->second->setBuffer(buffer);
+    }
 
 	if (progressVar)
 		*progressVar = 1.0;
@@ -65,7 +68,7 @@ void SF2Sound::loadSamples(
 
 void SF2Sound::addPreset(SF2Sound::Preset* preset)
 {
-	presets.add(preset);
+	presets.push_back(preset);
 }
 
 
@@ -94,7 +97,9 @@ void SF2Sound::useSubsound(int whichSubsound)
 {
 	selectedPreset = whichSubsound;
 	regions.clear();
-	regions.addArray(presets[whichSubsound]->regions);
+    
+    addRegion(presets[whichSubsound]->regions);
+
 }
 
 
@@ -109,7 +114,7 @@ SFZSample* SF2Sound::sampleFor(unsigned long sampleRate)
 	SFZSample* sample = samplesByRate[sampleRate];
 	if (sample == NULL) {
 		sample = new SFZSample(sampleRate);
-		samplesByRate.set(sampleRate, sample);
+		samplesByRate[sampleRate] = sample;
 		}
 	return sample;
 }
@@ -117,8 +122,11 @@ SFZSample* SF2Sound::sampleFor(unsigned long sampleRate)
 
 void SF2Sound::setSamplesBuffer(SFZAudioBuffer* buffer)
 {
-	for (HashMap<unsigned long, SFZSample*>::Iterator i(samplesByRate); i.next();)
-		i.getValue()->setBuffer(buffer);
+    
+    std::map<unsigned long, SFZSample*>::iterator iter;
+    
+    for (iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
+        iter->second->setBuffer(buffer);
 }
 
 
