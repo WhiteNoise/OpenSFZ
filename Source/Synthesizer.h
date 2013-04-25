@@ -35,6 +35,7 @@ protected:
 
 class SynthesizerSound {
 public:
+	SynthesizerSound();
     virtual ~SynthesizerSound();
     
     
@@ -42,9 +43,18 @@ public:
 
 class Synthesizer {
 public:
+	Synthesizer();
+	virtual ~Synthesizer();
     void addVoice (SynthesizerVoice* newVoice);
+	
     SynthesizerVoice* getVoice (int index) const;
-    int getNumVoices() const                                        { return voices.size(); }
+
+    int getNumVoices() const          
+	{ 
+		return voices.size(); 
+	}
+
+	void clearVoices();
     
     
     //==============================================================================
