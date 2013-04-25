@@ -5,7 +5,7 @@
 
 using namespace std;
 
-SFZSound::SFZSound(const File& fileIn)
+SFZSound::SFZSound(const Path& fileIn)
 	: file(fileIn)
 {
 }
@@ -47,46 +47,46 @@ void SFZSound::addRegion(SFZRegion* region)
 }
 
 
-SFZSample* SFZSound::addSample(string path, string defaultPath)
+SFZSample* SFZSound::addSample(string pathStr, string defaultPathStr)
 {
-    // FIXME: needs a little work here to replace File.
     
-    
-	path = path.replaceCharacter('\\', '/');
-	defaultPath = defaultPath.replaceCharacter('\\', '/');
-	File sampleFile;
-	if (defaultPath.isEmpty())
-		sampleFile = file.getSiblingFile(path);
+	//path = path.replaceCharacter('\\', '/');
+	//defaultPath = defaultPath.replaceCharacter('\\', '/');
+
+
+	Path sampleFile;
+	if (defaultPathStr.length() == 0)
+		sampleFile = file.getSiblingFile(pathStr);
 	else {
-		File defaultDir = file.getSiblingFile(defaultPath);
-		sampleFile = defaultDir.getChildFile(path);
+		Path defaultDir = file.getSiblingFile(defaultPathStr);
+		sampleFile = defaultDir.getChildFile(pathStr);
 		}
-	String samplePath = sampleFile.getFullPathName();
+	std::string samplePath = sampleFile.getFullPath();
 	SFZSample* sample = samples[samplePath];
 	if (sample == NULL) {
-		sample = new SFZSample(sampleFile);
-		samples.set(samplePath, sample);
+		sample = new SFZSample(sampleFile.getFullPath());
+		samples[samplePath] = sample;
 		}
 	return sample;
 }
 
 
-void SFZSound::addError(const String& message)
+void SFZSound::addError(const string& message)
 {
-	errors.add(message);
+	errors.push_back(message);
 }
 
 
-void SFZSound::addUnsupportedOpcode(const String& opcode)
+void SFZSound::addUnsupportedOpcode(const string& opcode)
 {
-	unsupportedOpcodes.set(opcode, opcode);
+	unsupportedOpcodes[opcode] = opcode;
 }
 
 
 void SFZSound::loadRegions()
 {
 	SFZReader reader(this);
-	reader.read(file);
+	reader.read(file.getFullPath());
 }
 
 
@@ -96,8 +96,8 @@ void SFZSound::loadSamples(	double* progressVar)
 		*progressVar = 0.0;
 
 	double numSamplesLoaded = 1.0, numSamples = samples.size();
-	for (HashMap<String,SFZSample*>::Iterator i(samples); i.next();) {
-		SFZSample* sample = i.getValue();
+	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ ) {
+		SFZSample* sample = iter->second;
 		bool ok = sample->load();
 		if (!ok)
 			addError("Couldn't load sample \"" + sample->getShortName() + "\"");
@@ -141,9 +141,9 @@ SFZRegion* SFZSound::regionAt(int index)
 }
 
 
-String SFZSound::getErrorsString()
+string SFZSound::getErrorsString()
 {
-	String result;
+	string result;
 	int numErrors = errors.size();
 	for (int i = 0; i < numErrors; ++i)
 		result += errors[i] + "\n";
@@ -151,7 +151,7 @@ String SFZSound::getErrorsString()
 	if (unsupportedOpcodes.size() > 0) {
 		result += "\nUnsupported opcodes:";
 		bool shownOne = false;
-		for (HashMap<String,String>::Iterator i(unsupportedOpcodes); i.next();) {
+		for (map<string,string>::iterator iter = unsupportedOpcodes.begin(); iter != unsupportedOpcodes.end(); iter++ ) {
 			if (!shownOne) {
 				result += " ";
 				shownOne = true;
@@ -172,9 +172,9 @@ int SFZSound::numSubsounds()
 }
 
 
-String SFZSound::subsoundName(int whichSubsound)
+string SFZSound::subsoundName(int whichSubsound)
 {
-	return String::empty;
+	return string("");
 }
 
 
@@ -197,19 +197,16 @@ void SFZSound::dump()
 	if (numErrors > 0) {
 		printf("Errors:\n");
 		for (i = 0; i < numErrors; ++i) {
-			char message[256];
-			errors[i].copyToUTF8(message, 256);
-			printf("- %s\n", message);
+
+			printf("- %s\n", errors[i].c_str());
 			}
 		printf("\n");
 		}
 
 	if (unsupportedOpcodes.size() > 0) {
 		printf("Unused opcodes:\n");
-		for (HashMap<String,String>::Iterator i(unsupportedOpcodes); i.next();) {
-			char opcode[64];
-			i.getKey().copyToUTF8(opcode, 64);
-			printf("  %s\n", opcode);
+		for (map<string,string>::iterator iter = unsupportedOpcodes.begin(); iter != unsupportedOpcodes.end(); iter++ ) {
+				printf("  %s\n", iter.second.c_str());
 			}
 		printf("\n");
 		}
@@ -221,8 +218,8 @@ void SFZSound::dump()
 	printf("\n");
 
 	printf("Samples:\n");
-	for (HashMap<String,SFZSample*>::Iterator i(samples); i.next();)
-		i.getValue()->dump();
+	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++)
+		iter.second->dump();
 }
 
 

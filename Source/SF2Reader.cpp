@@ -4,13 +4,12 @@
 #include "RIFF.h"
 #include "SF2.h"
 #include "SF2Generator.h"
-#include "SFZDebug.h"
 
 
-SF2Reader::SF2Reader(SF2Sound* soundIn, const File& fileIn)
+SF2Reader::SF2Reader(SF2Sound* soundIn, const Path& p)
 	: sound(soundIn)
 {
-	file = fileIn.createInputStream();
+	file = p.createInputStream();
 }
 
 

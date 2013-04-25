@@ -1,7 +1,6 @@
 #include "SFZSynth.h"
 #include "SFZVoice.h"
 #include "SFZSound.h"
-#include "SFZDebug.h"
 
 
 SFZSynth::SFZSynth()
@@ -15,14 +14,13 @@ void SFZSynth::noteOn(
 {
 	int i;
 
-	const ScopedLock locker(lock);
 
 	int midiVelocity = (int) (velocity * 127);
 
 	// First, stop any currently-playing sounds in the group.
 	//*** Currently, this only pays attention to the first matching region.
 	int group = 0;
-	SFZSound* sound = dynamic_cast<SFZSound*>(getSound(0));
+	SFZSound* sound = dynamic_cast<SFZSound*>(sounds[0]);
 	if (sound) {
 		SFZRegion* region = sound->getRegionFor(midiNoteNumber, midiVelocity);
 		if (region)
@@ -30,7 +28,7 @@ void SFZSynth::noteOn(
 		}
 	if (group != 0) {
 		for (i = voices.size(); --i >= 0;) {
-			SFZVoice* voice = dynamic_cast<SFZVoice*>(voices.getUnchecked(i));
+			SFZVoice* voice = dynamic_cast<SFZVoice*>(voices[i]);
 			if (voice == NULL)
 				continue;
 			if (voice->getOffBy() == group)
@@ -84,7 +82,7 @@ void SFZSynth::noteOff(
 	const int midiChannel, const int midiNoteNumber,
 	const bool allowTailOff)
 {
-	const ScopedLock locker(lock);
+
 
 	Synthesizer::noteOff(midiChannel, midiNoteNumber, allowTailOff);
 
@@ -113,10 +111,11 @@ void SFZSynth::noteOff(
 int SFZSynth::numVoicesUsed()
 {
 	int numUsed = 0;
-	for (int i = voices.size(); --i >= 0;) {
-		if (voices.getUnchecked(i)->getCurrentlyPlayingNote() >= 0)
+	for (int i = voices.size()-1; i >= 0; i--)
+    {
+		if (voices[i]->getCurrentlyPlayingNote() >= 0)
 			numUsed += 1;
-		}
+    }
 	return numUsed;
 }
 

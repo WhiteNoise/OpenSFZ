@@ -10,7 +10,7 @@ class SFZSample;
 
 class SF2Reader {
 	public:
-		SF2Reader(SF2Sound* sound, const File& file);
+		SF2Reader(SF2Sound* sound, const Path& p);
 		~SF2Reader();
 
 		void	read();
@@ -19,7 +19,7 @@ class SF2Reader {
 
 	protected:
 		SF2Sound*	sound;
-		FileInputStream*	file;
+		InputStream*	file;
 
 		void	addGeneratorToRegion(
 			word genOper, SF2::genAmountType* amount, SFZRegion* region);

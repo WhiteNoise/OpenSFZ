@@ -1,10 +1,10 @@
 #include "SF2Sound.h"
 #include "SF2Reader.h"
 #include "SFZSample.h"
-#include "SFZDebug.h"
 
 
-SF2Sound::SF2Sound(const File& file)
+
+SF2Sound::SF2Sound(const Path& file)
 	: SFZSound(file)
 {
 }
@@ -40,19 +40,18 @@ void SF2Sound::loadRegions()
 	reader.read();
 
 	// Sort the presets.
-	PresetComparator comparator;
-	presets.sort(comparator);
+	//PresetComparator comparator;
+	//presets.sort(comparator);
 
 	useSubsound(0);
 }
 
 
 void SF2Sound::loadSamples(
-	AudioFormatManager* formatManager,
-	double* progressVar, Thread* thread)
+	double* progressVar)
 {
 	SF2Reader reader(this, file);
-	SFZAudioBuffer* buffer = reader.readSamples(progressVar, thread);
+	SFZAudioBuffer* buffer = reader.readSamples(progressVar);
 	if (buffer) {
 		// All the SFZSamples will share the buffer.
 		for (HashMap<unsigned long, SFZSample*>::Iterator i(samplesByRate); i.next();)
@@ -76,10 +75,10 @@ int SF2Sound::numSubsounds()
 }
 
 
-String SF2Sound::subsoundName(int whichSubsound)
+std::string SF2Sound::subsoundName(int whichSubsound)
 {
 	Preset* preset = presets[whichSubsound];
-	String result;
+	std::string result;
 	if (preset->bank != 0) {
 		result += preset->bank;
 		result += "/";

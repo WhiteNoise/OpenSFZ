@@ -1,3 +1,5 @@
+#include "OpenSFZ.h"
+
 #include "SF2.h"
 #include "RIFF.h"
 

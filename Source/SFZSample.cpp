@@ -45,7 +45,9 @@ SFZSample::~SFZSample()
 std::string SFZSample::getShortName()
 {
     // FIXME: this isn't short.
-	return fileName;
+    Path p(fileName);
+    return p.getFileName();
+
 }
 
 

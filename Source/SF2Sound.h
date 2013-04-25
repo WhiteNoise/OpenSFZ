@@ -7,26 +7,30 @@
 
 class SF2Sound : public SFZSound {
 	public:
-		SF2Sound(const File& file);
+		SF2Sound(const Path& file);
 		~SF2Sound();
 
 		void	loadRegions();
-		void	loadSamples(
-			AudioFormatManager* formatManager,
-			double* progressVar = NULL, Thread* thread = NULL);
+		void	loadSamples(double* progressVar = NULL);
 
 		struct Preset {
             std::string	name;
 			int    	bank;
 			int   	preset;
-			OwnedArray<SFZRegion>	regions;
+            std::vector<SFZRegion *>	regions;
 
 			Preset(std::string nameIn, int bankIn, int presetIn)
 				: name(nameIn), bank(bankIn), preset(presetIn) {}
-			~Preset() {}
+			~Preset()
+            {
+                for(int i=0; i<regions.size(); i++)
+                    delete regions[i];
+                regions.clear();
+                
+            }
 
 			void	addRegion(SFZRegion* region) {
-				regions.add(region);
+				regions.push_back(region);
 				}
 			};
 		void	addPreset(Preset* preset);
@@ -40,7 +44,7 @@ class SF2Sound : public SFZSound {
 		void	setSamplesBuffer(SFZAudioBuffer* buffer);
 
 	protected:
-		OwnedArray<Preset>	presets;
+        std::vector<Preset *>	presets;
         std::map<unsigned long, SFZSample*>	samplesByRate;
 		int               	selectedPreset;
 	};

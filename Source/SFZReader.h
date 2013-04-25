@@ -12,7 +12,7 @@ class SFZReader {
 		SFZReader(SFZSound* sound);
 		~SFZReader();
 
-		void	read(const File& file);
+		void	read(const Path& file);
 		void	read(const char* text, unsigned int length);
 
 	protected:

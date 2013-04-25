@@ -3,6 +3,8 @@
 
 
 #include "WinTypes.h"
+#include "OpenSFZ.h"
+#include "InputStream.h"
 
 #define SF2Field(type, name) 	\
 	type	name;

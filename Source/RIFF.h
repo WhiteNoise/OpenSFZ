@@ -2,6 +2,7 @@
 #define RIFF_h
 
 #include "WinTypes.h"
+#include "InputStream.h"
 
 
 struct RIFFChunk {

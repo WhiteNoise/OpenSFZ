@@ -52,7 +52,7 @@ bool SFZAudioReader::loadOgg(string fileName) {
         for (int i=0;i<myDataSize;i++) {
             for(j=0; j<myChannels; j++)
             {
-                buffers->channels[j][i] = temp[position];
+                buffers->channels[j][i] = (float)temp[position] / 32768.0f;
                 position++;
             }
         }

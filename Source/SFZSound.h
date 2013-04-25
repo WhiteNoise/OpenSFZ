@@ -3,13 +3,14 @@
 
 #include "OpenSFZ.h"
 #include "SFZRegion.h"
+#include "Synthesizer.h"
 
 class SFZSample;
 
 // File = path to .SFZ file?
 class SFZSound : public SynthesizerSound {
 	public:
-		SFZSound(const File& file);
+		SFZSound(const Path& file);
 		virtual ~SFZSound();
 
 		bool	appliesToNote(const int midiNoteNumber);
@@ -38,7 +39,7 @@ class SFZSound : public SynthesizerSound {
 		void	dump();
 
 	protected:
-		File 	file;
+		Path 	file;
         std::vector<SFZRegion*>	regions;
         std::map<std::string, SFZSample*>	samples;
         std::vector<std::string>      	errors;

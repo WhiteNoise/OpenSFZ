@@ -17,7 +17,7 @@ class SFZSample {
 
 		SFZAudioBuffer*	getBuffer() { return buffer; }
 		double	getSampleRate() { return sampleRate; }
-		std::string	getShortName();
+        std::string	getShortName();
 		void	setBuffer(SFZAudioBuffer* newBuffer);
 		SFZAudioBuffer*	detachBuffer();
 		void	dump();

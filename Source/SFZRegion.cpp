@@ -1,6 +1,5 @@
 #include "SFZRegion.h"
 #include "SFZSample.h"
-#include "SFZDebug.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -102,7 +101,7 @@ void SFZRegion::sf2ToSFZ()
 	ampeg.decay = timecents2Secs(ampeg.decay);
 	if (ampeg.sustain < 0.0)
 		ampeg.sustain = 0.0;
-	ampeg.sustain = 100.0 * Decibels::decibelsToGain(-ampeg.sustain / 10.0);
+	ampeg.sustain = 100.0 * decibelsToGain(-ampeg.sustain / 10.0);
 	ampeg.release = timecents2Secs(ampeg.release);
 
 	// Pin very short EG segments.  Timecents don't get to zero, and our EG is
@@ -130,9 +129,7 @@ void SFZRegion::dump()
 {
 	printf("%d - %d, vel %d - %d", lokey, hikey, lovel, hivel);
 	if (sample) {
-		char name[64];
-		sample->getShortName().copyToUTF8(name, 64);
-		printf(": %s", name);
+		printf(": %s", 		sample->getShortName().c_str());
 		}
 	printf("\n");
 }

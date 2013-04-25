@@ -2,7 +2,6 @@
 #include "SFZSound.h"
 #include "SFZRegion.h"
 #include "SFZSample.h"
-#include "SFZDebug.h"
 #include <math.h>
 
 static const float globalGain = -1.0;
@@ -64,7 +63,7 @@ void SFZVoice::startNote(
 	double velocityGainDB = -20.0 * log10((127.0 * 127.0) / (velocity * velocity));
 	velocityGainDB *= region->amp_veltrack / 100.0;
 	noteGainDB += velocityGainDB;
-	noteGainLeft = noteGainRight = Decibels::decibelsToGain(noteGainDB);
+	noteGainLeft = noteGainRight = decibelsToGain(noteGainDB);
 	// The SFZ spec is silent about the pan curve, but a 3dB pan law seems
 	// common.  This sqrt() curve matches what Dimension LE does; Alchemy Free
 	// seems closer to sin(adjustedPan * pi/2).
@@ -72,7 +71,7 @@ void SFZVoice::startNote(
 	noteGainLeft *= sqrt(1.0 - adjustedPan);
 	noteGainRight *= sqrt(adjustedPan);
 	ampeg.startNote(
-		&region->ampeg, floatVelocity, getSampleRate(), &region->ampeg_veltrack);
+		&region->ampeg, floatVelocity, sampleRate, &region->ampeg_veltrack);
 
 	// Offset/end.
 	sourceSamplePosition = region->offset;
@@ -159,14 +158,13 @@ void SFZVoice::renderNextBlock(
 		return;
 
 	SFZAudioBuffer* buffer = region->sample->getBuffer();
-	const float* inL = buffer->channel[0];
-	const float* inR =
-        buffer->getNumChannels() > 1 ? buffer->channel[1]) : NULL;
+	const float* inL = buffer->channels[0];
+	const float* inR = buffer->getNumChannels() > 1 ? buffer->channels[1] : NULL;
 
-	float* outL = outputBuffer.channel[0] + startSample;
+	float* outL = outputBuffer.channels[0] + startSample;
 	float* outR =
 		outputBuffer.getNumChannels() > 1 ?
-		outputBuffer.channel[1] + startSample : NULL;
+		outputBuffer.channels[1] + startSample : NULL;
 
 	// Cache some values, to give them at least some chance of ending up in
 	// registers.
@@ -283,7 +281,7 @@ std::string SFZVoice::infoString()
 		str, 128,
 		"note: %d, vel: %d, pan: %g, eg: %s, loops: %lu",
 		curMidiNote, curVelocity, region->pan, egSegmentName, numLoops);
-	return String(str);
+	return str;
 }
 
 
@@ -294,7 +292,6 @@ void SFZVoice::calcPitchRatio()
 	note += region->transpose;
 	note += region->tune / 100.0;
 
-	double sampleRate = getSampleRate();
 	double adjustedPitch =
 		region->pitch_keycenter +
 		(note - region->pitch_keycenter) * (region->pitch_keytrack / 100.0);
