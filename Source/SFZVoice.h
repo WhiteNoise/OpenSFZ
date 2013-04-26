@@ -1,7 +1,7 @@
 #ifndef SFZVoice_h
 #define SFZVoice_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 #include "SFZEG.h"
 #include "SFZAudioBuffer.h"
 #include "Synthesizer.h"

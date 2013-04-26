@@ -1,7 +1,7 @@
 #ifndef SFZSample_h
 #define SFZSample_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 #include "SFZAudioReader.h"
 
 class SFZSample {

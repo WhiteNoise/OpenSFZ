@@ -1,4 +1,4 @@
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 #include "SF2.h"
 #include "RIFF.h"

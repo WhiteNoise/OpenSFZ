@@ -1,7 +1,7 @@
 #ifndef SFZRegion_h
 #define SFZRegion_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 class SFZSample;
 

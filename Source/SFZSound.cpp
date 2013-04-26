@@ -5,6 +5,11 @@
 
 using namespace std;
 
+SFZSound::SFZSound(std::string sz)
+{
+    file = Path(sz);
+}
+
 SFZSound::SFZSound(const Path& fileIn)
 	: file(fileIn)
 {
@@ -96,7 +101,8 @@ void SFZSound::loadSamples(	double* progressVar)
 		*progressVar = 0.0;
 
 	double numSamplesLoaded = 1.0, numSamples = samples.size();
-	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ ) {
+	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
+    {
 		SFZSample* sample = iter->second;
 		bool ok = sample->load();
 		if (!ok)
@@ -108,7 +114,7 @@ void SFZSound::loadSamples(	double* progressVar)
         
 		//if (thread && thread->threadShouldExit())
 		//	return;
-		//}
+    }
 
 	if (progressVar)
 		*progressVar = 1.0;
@@ -158,8 +164,8 @@ string SFZSound::getErrorsString()
 				}
 			else
 				result += ", ";
-			result += i.getKey();
-			}
+			result += iter->first;
+        }
 		result += "\n";
 		}
 	return result;
@@ -206,7 +212,7 @@ void SFZSound::dump()
 	if (unsupportedOpcodes.size() > 0) {
 		printf("Unused opcodes:\n");
 		for (map<string,string>::iterator iter = unsupportedOpcodes.begin(); iter != unsupportedOpcodes.end(); iter++ ) {
-				printf("  %s\n", iter.second.c_str());
+				printf("  %s\n", iter->second.c_str());
 			}
 		printf("\n");
 		}
@@ -219,7 +225,7 @@ void SFZSound::dump()
 
 	printf("Samples:\n");
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++)
-		iter.second->dump();
+		iter->second->dump();
 }
 
 

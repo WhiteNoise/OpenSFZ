@@ -1,7 +1,7 @@
 #ifndef SF2Sound_h
 #define SF2Sound_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 #include "SFZSound.h"
 
 

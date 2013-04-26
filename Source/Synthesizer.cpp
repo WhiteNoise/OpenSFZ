@@ -8,11 +8,11 @@
 
 #include "Synthesizer.h"
 
-SynthesiserSound::SynthesiserSound()
+SynthesizerSound::SynthesizerSound()
 {
 }
 
-SynthesiserSound::~SynthesiserSound()
+SynthesizerSound::~SynthesizerSound()
 {
 }
 
@@ -21,7 +21,7 @@ SynthesiserSound::~SynthesiserSound()
 SynthesizerVoice::SynthesizerVoice()
 {
     sampleRate = 44100.0f;
-    
+
     currentlyPlayingNote = -1;
     noteOnTime = 0;
     currentlyPlayingSound = 0;
@@ -38,7 +38,7 @@ void SynthesizerVoice::setCurrentPlaybackSampleRate (double newRate)
 void SynthesizerVoice::clearCurrentNote()
 {
     currentlyPlayingNote = -1;
-    currentlyPlayingSound = nullptr;
+    currentlyPlayingSound = NULL;
 }
 
 
@@ -47,6 +47,11 @@ void SynthesizerVoice::clearCurrentNote()
 Synthesizer::Synthesizer()
 {
 	sampleRate = 44100.0f;
+    noteStealingEnabled = false;
+    lastNoteOnCounter = 0;
+    
+    for(int i=0; i<16; i++)
+        lastPitchWheelValues[i] = 0;
 }
 
 Synthesizer::~Synthesizer()
@@ -68,12 +73,12 @@ void Synthesizer::clearVoices()
 	voices.clear();
 }
 	
-SynthesizerVoice* getVoice (int index) const
+SynthesizerVoice* Synthesizer::getVoice (int index) const
 {
 	if(index < 0 || index >= voices.size())
 		return NULL;
 
-	return voices[i];
+	return voices[index];
 }
 
     
@@ -85,10 +90,26 @@ void Synthesizer::clearSounds()
 	voices.clear();
 }
 
+void Synthesizer::addSound (SynthesizerSound *newSound)
+{
+    sounds.push_back(newSound);
+}
+
+/** Removes and deletes one of the sounds. */
+void Synthesizer::removeSound (int index)
+{
+    delete sounds[index];
+    
+    sounds.erase(sounds.begin() + index);
+}
+
+
 void Synthesizer::noteOn (int midiChannel,
                         int midiNoteNumber,
                         float velocity)
-{	
+{
+
+    
 	for(int i=0; i<sounds.size(); i++)
 	{
 		SynthesizerSound *sound = sounds[i];
@@ -98,14 +119,13 @@ void Synthesizer::noteOn (int midiChannel,
             // still playing because of the sustain or sostenuto pedal).
             for (int j = 0; j<voices.size(); j++)
             {
-                SynthesiserVoice* const voice = voices.getUnchecked (j);
+                SynthesizerVoice* const voice = voices[j];
 
-                if (voice->getCurrentlyPlayingNote() == midiNoteNumber
-                     && voice->isPlayingChannel (midiChannel))
+                if (voice->getCurrentlyPlayingNote() == midiNoteNumber)
                     stopVoice (voice, true);
             }
-
-            startVoice (findFreeVoice (sound, shouldStealNotes),
+        
+            startVoice (findFreeVoice (sound, noteStealingEnabled),
                         sound, midiChannel, midiNoteNumber, velocity);
 	}
 
@@ -122,12 +142,12 @@ void Synthesizer::allNotesOff (int midiChannel,
                             bool allowTailOff)
 {
 
-    for (int i = 0; i<voices.size(); )
+    for (int i = 0; i<voices.size(); i++)
     {
-        SynthesiserVoice* const voice = voices[i];
+        SynthesizerVoice* const voice = voices[i];
 
-        if (midiChannel <= 0 || voice->isPlayingChannel (midiChannel))
-            voice->stopNote (allowTailOff);
+
+        voice->stopNote (allowTailOff);
     }
 }
     
@@ -137,10 +157,10 @@ void Synthesizer::handlePitchWheel (int midiChannel,
 
     for (int i=0; i<voices.size(); i++)
     {
-        SynthesiserVoice* const voice = voices[i];
+        SynthesizerVoice* const voice = voices[i];
 
-        if (midiChannel <= 0 || voice->isPlayingChannel (midiChannel))
-            voice->pitchWheelMoved (wheelValue);
+
+        voice->pitchWheelMoved (wheelValue);
     }
 }
 
@@ -159,10 +179,9 @@ void Synthesizer::handleController (int midiChannel,
 
     for (int i=0; i<voices.size(); i++)
     {
-        SynthesiserVoice* const voice = voices[i];
+        SynthesizerVoice* const voice = voices[i];
 
-        if (midiChannel <= 0 || voice->isPlayingChannel (midiChannel))
-            voice->controllerMoved (controllerNumber, controllerValue);
+        voice->controllerMoved (controllerNumber, controllerValue);
     }
 }
 
@@ -186,9 +205,9 @@ SynthesizerVoice* Synthesizer::findFreeVoice (SynthesizerSound* soundToPlay,
 		SynthesizerVoice *oldest = NULL;
 		for(int i=0; i<voices.size(); i++)
 		{
-            SynthesiserVoice* const voice = voices[i];
+            SynthesizerVoice* const voice = voices[i];
             
-            if(oldest == nullptr || oldest->noteOnTime < voice->noteOnTime)
+            if(oldest == NULL || oldest->noteOnTime > voice->noteOnTime)
                 oldest = voice;
 		}
 
@@ -205,12 +224,40 @@ void Synthesizer::startVoice (SynthesizerVoice* voice,
                     int midiNoteNumber,
                     float velocity)
 {
+    if (voice != NULL && sound != NULL)
+    {
+        if (voice->currentlyPlayingSound != NULL)
+            voice->stopNote (false);
+        
+        voice->startNote (midiNoteNumber, velocity, sound,
+                          lastPitchWheelValues [midiChannel - 1]);
+        
+        voice->currentlyPlayingNote = midiNoteNumber;
+        voice->noteOnTime = ++lastNoteOnCounter;
+        voice->currentlyPlayingSound = sound;
+        voice->keyIsDown = true;
+        voice->sostenutoPedalDown = false;
+    }
 
 }
+
+void Synthesizer::stopVoice (SynthesizerVoice* voice, const bool allowTailOff)
+{
+    //assert (voice != NULL);
     
+    voice->stopNote (allowTailOff);
+    
+    // the subclass MUST call clearCurrentNote() if it's not tailing off! RTFM for stopNote()!
+    //assert (allowTailOff || (voice->getCurrentlyPlayingNote() < 0 && voice->getCurrentlyPlayingSound() == 0));
+}
+
 void Synthesizer::renderNextBlock (SFZAudioBuffer& outputAudio,
                         int startSample,
                         int numSamples)
 {
+    
+    for (int i=0; i<voices.size(); i++)
+        voices[i]->renderNextBlock (outputAudio, startSample, numSamples);
+
 
 }

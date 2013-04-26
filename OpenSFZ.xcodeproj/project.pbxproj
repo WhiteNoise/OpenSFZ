@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A73FB588172A27C600C80C7F /* SFZCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73FB587172A27C600C80C7F /* SFZCommon.cpp */; };
 		A7CB309F17261D5C00F34741 /* RIFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB307117261D5C00F34741 /* RIFF.cpp */; };
 		A7CB30A017261D5C00F34741 /* RIFF.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB307217261D5C00F34741 /* RIFF.h */; };
 		A7CB30A117261D5C00F34741 /* generators.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB307417261D5C00F34741 /* generators.h */; };
@@ -48,7 +49,7 @@
 		A7CB30CD1726300600F34741 /* SFZAudioBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB30CB1726300500F34741 /* SFZAudioBuffer.h */; };
 		A7CB30D01726354C00F34741 /* Synthesizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB30CE1726354A00F34741 /* Synthesizer.cpp */; };
 		A7CB30D11726354C00F34741 /* Synthesizer.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB30CF1726354A00F34741 /* Synthesizer.h */; };
-		A7CB30D31726370300F34741 /* OpenSFZ.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB30D21726370200F34741 /* OpenSFZ.h */; };
+		A7CB30D31726370300F34741 /* SFZCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB30D21726370200F34741 /* SFZCommon.h */; };
 		A7CB312C17276C2E00F34741 /* SFZAudioReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB312A17276C2A00F34741 /* SFZAudioReader.cpp */; };
 		A7CB312D17276C2E00F34741 /* SFZAudioReader.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB312B17276C2B00F34741 /* SFZAudioReader.h */; };
 		A7CB313017276CB400F34741 /* stb_vorbis.c in Sources */ = {isa = PBXBuildFile; fileRef = A7CB312E17276CB000F34741 /* stb_vorbis.c */; };
@@ -61,9 +62,11 @@
 		A7CB313F1728AEC000F34741 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB313D1728AEBE00F34741 /* InputStream.h */; };
 		A7CB31421728B24F00F34741 /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB31401728B24B00F34741 /* Path.cpp */; };
 		A7CB31431728B24F00F34741 /* Path.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB31411728B24C00F34741 /* Path.h */; };
+		A7F17203172A0A6D00F17088 /* OpenSFZ.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F17202172A0A6D00F17088 /* OpenSFZ.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A73FB587172A27C600C80C7F /* SFZCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SFZCommon.cpp; sourceTree = "<group>"; };
 		A7CB306617261D2400F34741 /* libOpenSFZ.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOpenSFZ.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7CB307117261D5C00F34741 /* RIFF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RIFF.cpp; sourceTree = "<group>"; };
 		A7CB307217261D5C00F34741 /* RIFF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RIFF.h; sourceTree = "<group>"; };
@@ -106,7 +109,7 @@
 		A7CB30CB1726300500F34741 /* SFZAudioBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFZAudioBuffer.h; sourceTree = "<group>"; };
 		A7CB30CE1726354A00F34741 /* Synthesizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Synthesizer.cpp; sourceTree = "<group>"; };
 		A7CB30CF1726354A00F34741 /* Synthesizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesizer.h; sourceTree = "<group>"; };
-		A7CB30D21726370200F34741 /* OpenSFZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenSFZ.h; sourceTree = "<group>"; };
+		A7CB30D21726370200F34741 /* SFZCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFZCommon.h; sourceTree = "<group>"; };
 		A7CB312A17276C2A00F34741 /* SFZAudioReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SFZAudioReader.cpp; sourceTree = "<group>"; };
 		A7CB312B17276C2B00F34741 /* SFZAudioReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFZAudioReader.h; sourceTree = "<group>"; };
 		A7CB312E17276CB000F34741 /* stb_vorbis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stb_vorbis.c; sourceTree = "<group>"; };
@@ -119,6 +122,7 @@
 		A7CB313D1728AEBE00F34741 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputStream.h; sourceTree = "<group>"; };
 		A7CB31401728B24B00F34741 /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path.cpp; sourceTree = "<group>"; };
 		A7CB31411728B24C00F34741 /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
+		A7F17202172A0A6D00F17088 /* OpenSFZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenSFZ.h; path = Include/OpenSFZ.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +139,7 @@
 		A7CB305D17261D2400F34741 = {
 			isa = PBXGroup;
 			children = (
+				A7F17202172A0A6D00F17088 /* OpenSFZ.h */,
 				A7CB306D17261D5C00F34741 /* Source */,
 				A7CB306717261D2400F34741 /* Products */,
 			);
@@ -151,27 +156,29 @@
 		A7CB306D17261D5C00F34741 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A7CB31401728B24B00F34741 /* Path.cpp */,
-				A7CB31411728B24C00F34741 /* Path.h */,
-				A7CB31341727F26F00F34741 /* XMFile.cpp */,
-				A7CB31351727F27100F34741 /* XMFile.h */,
+				A7CB313C1728AEBC00F34741 /* InputStream.cpp */,
+				A7CB313D1728AEBE00F34741 /* InputStream.h */,
 				A7CB31381727F2BC00F34741 /* MilkyPlayCommon.h */,
 				A7CB313A1727F2E600F34741 /* MilkyPlayTypes.h */,
-				A7CB312E17276CB000F34741 /* stb_vorbis.c */,
-				A7CB312F17276CB100F34741 /* stb_vorbis.h */,
+				A7CB31401728B24B00F34741 /* Path.cpp */,
+				A7CB31411728B24C00F34741 /* Path.h */,
 				A7CB307117261D5C00F34741 /* RIFF.cpp */,
 				A7CB307217261D5C00F34741 /* RIFF.h */,
 				A7CB307317261D5C00F34741 /* sf2-chunks */,
 				A7CB307F17261D5C00F34741 /* SF2.cpp */,
 				A7CB308017261D5C00F34741 /* SF2.h */,
-				A7CB30CE1726354A00F34741 /* Synthesizer.cpp */,
-				A7CB30CF1726354A00F34741 /* Synthesizer.h */,
 				A7CB308117261D5C00F34741 /* SF2Generator.cpp */,
 				A7CB308217261D5C00F34741 /* SF2Generator.h */,
 				A7CB308317261D5C00F34741 /* SF2Reader.cpp */,
 				A7CB308417261D5C00F34741 /* SF2Reader.h */,
 				A7CB308517261D5C00F34741 /* SF2Sound.cpp */,
 				A7CB308617261D5C00F34741 /* SF2Sound.h */,
+				A7CB30CA1726300400F34741 /* SFZAudioBuffer.cpp */,
+				A7CB30CB1726300500F34741 /* SFZAudioBuffer.h */,
+				A7CB312A17276C2A00F34741 /* SFZAudioReader.cpp */,
+				A7CB312B17276C2B00F34741 /* SFZAudioReader.h */,
+				A7CB30D21726370200F34741 /* SFZCommon.h */,
+				A73FB587172A27C600C80C7F /* SFZCommon.cpp */,
 				A7CB308917261D5C00F34741 /* SFZEG.cpp */,
 				A7CB308A17261D5C00F34741 /* SFZEG.h */,
 				A7CB308F17261D5C00F34741 /* SFZReader.cpp */,
@@ -186,15 +193,14 @@
 				A7CB309817261D5C00F34741 /* SFZSynth.h */,
 				A7CB309917261D5C00F34741 /* SFZVoice.cpp */,
 				A7CB309A17261D5C00F34741 /* SFZVoice.h */,
+				A7CB312E17276CB000F34741 /* stb_vorbis.c */,
+				A7CB312F17276CB100F34741 /* stb_vorbis.h */,
 				A7CB309B17261D5C00F34741 /* StringSlice.h */,
+				A7CB30CE1726354A00F34741 /* Synthesizer.cpp */,
+				A7CB30CF1726354A00F34741 /* Synthesizer.h */,
 				A7CB309C17261D5C00F34741 /* WinTypes.h */,
-				A7CB30CA1726300400F34741 /* SFZAudioBuffer.cpp */,
-				A7CB30CB1726300500F34741 /* SFZAudioBuffer.h */,
-				A7CB30D21726370200F34741 /* OpenSFZ.h */,
-				A7CB312A17276C2A00F34741 /* SFZAudioReader.cpp */,
-				A7CB312B17276C2B00F34741 /* SFZAudioReader.h */,
-				A7CB313C1728AEBC00F34741 /* InputStream.cpp */,
-				A7CB313D1728AEBE00F34741 /* InputStream.h */,
+				A7CB31341727F26F00F34741 /* XMFile.cpp */,
+				A7CB31351727F27100F34741 /* XMFile.h */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -251,7 +257,7 @@
 				A7CB30C917261D5C00F34741 /* WinTypes.h in Headers */,
 				A7CB30CD1726300600F34741 /* SFZAudioBuffer.h in Headers */,
 				A7CB30D11726354C00F34741 /* Synthesizer.h in Headers */,
-				A7CB30D31726370300F34741 /* OpenSFZ.h in Headers */,
+				A7CB30D31726370300F34741 /* SFZCommon.h in Headers */,
 				A7CB312D17276C2E00F34741 /* SFZAudioReader.h in Headers */,
 				A7CB313117276CB400F34741 /* stb_vorbis.h in Headers */,
 				A7CB31371727F27300F34741 /* XMFile.h in Headers */,
@@ -259,6 +265,7 @@
 				A7CB313B1727F2E700F34741 /* MilkyPlayTypes.h in Headers */,
 				A7CB313F1728AEC000F34741 /* InputStream.h in Headers */,
 				A7CB31431728B24F00F34741 /* Path.h in Headers */,
+				A7F17203172A0A6D00F17088 /* OpenSFZ.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +339,7 @@
 				A7CB31361727F27300F34741 /* XMFile.cpp in Sources */,
 				A7CB313E1728AEC000F34741 /* InputStream.cpp in Sources */,
 				A7CB31421728B24F00F34741 /* Path.cpp in Sources */,
+				A73FB588172A27C600C80C7F /* SFZCommon.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,7 +350,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -365,7 +373,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -374,7 +382,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -398,7 +406,11 @@
 		A7CB306B17261D2400F34741 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				EXECUTABLE_PREFIX = lib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -406,7 +418,11 @@
 		A7CB306C17261D2400F34741 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				EXECUTABLE_PREFIX = lib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -430,6 +446,7 @@
 				A7CB306C17261D2400F34741 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

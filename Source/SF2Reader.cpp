@@ -200,8 +200,9 @@ SFZAudioBuffer* SF2Reader::readSamples(
 	// Read and convert.
 	short* buffer = new short[bufferSize];
 	unsigned long samplesLeft = numSamples;
-	float* out = sampleBuffer->getSampleData(0);
-	while (samplesLeft > 0) {
+	float* out = sampleBuffer->channels[0];
+	while (samplesLeft > 0)
+    {
 		// Read the buffer.
 		unsigned long samplesToRead = bufferSize;
 		if (samplesToRead > samplesLeft)
@@ -226,7 +227,7 @@ SFZAudioBuffer* SF2Reader::readSamples(
 		//	delete sampleBuffer;
 		//	return NULL;
 		//	}
-		//}
+    }
 	delete buffer;
 
 	if (progressVar)

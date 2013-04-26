@@ -12,14 +12,38 @@
 SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const int numSamples_)
 {
     numSamples = numSamples_;
-    numChannels = numChannels_;
+
     int c = numChannels_;
     
     if(c > 2)
         c = 2;
     
-    for(int i=0; i<c; i++)
+    numChannels = c;
+    
+    for(int i=0; i<numChannels; i++)
     {
         channels[i] = new float[numSamples_];
     }
+    owned = true;
+}
+
+SFZAudioBuffer::~SFZAudioBuffer()
+{
+    if(owned)
+    {
+        for(int i=0; i<numChannels; i++)
+        {
+            delete channels[i];
+            channels[i] = 0;
+        }
+    }
+}
+
+SFZAudioBuffer::SFZAudioBuffer(const int numSamples_, float *channel1, float *channel2)
+{
+    owned = false;
+    numChannels = 2;
+    numSamples = numSamples_;
+    channels[0] = channel1;
+    channels[1] = channel2;
 }

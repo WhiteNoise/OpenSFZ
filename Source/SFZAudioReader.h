@@ -9,7 +9,7 @@
 #ifndef __OpenSFZ__SFZAudioReader__
 #define __OpenSFZ__SFZAudioReader__
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 
 

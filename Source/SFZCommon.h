@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include <fstream>
+#include <sstream>
 
 #include "Math.h"
 #include "SFZAudioBuffer.h"
@@ -23,20 +24,14 @@
 
 #include "Synthesizer.h"
 
+
 #define VORBIS 1
 
-float decibelsToGain(float db)
-{
-    return powf(10.0f, db / 20.0f);
-}
-
-float getMidiNoteInHertz(int noteNumber)
-{
-    noteNumber -= 12 * 6 + 9; // now 0 = A
-    return 440.0f * pow (2.0, noteNumber / 12.0);
-}
+extern float decibelsToGain(float db);
+extern float getMidiNoteInHertz(int noteNumber);
 
 typedef long int64;
+
 
 
 #endif

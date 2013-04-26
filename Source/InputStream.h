@@ -10,7 +10,7 @@
 #define __OpenSFZ__InputStream__
 
 #include <iostream>
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 class InputStream
 {

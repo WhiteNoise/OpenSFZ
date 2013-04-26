@@ -1,7 +1,7 @@
 #ifndef SFZSynth_h
 #define SFZSynth_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 class SFZSynth : public Synthesizer {
 	public:

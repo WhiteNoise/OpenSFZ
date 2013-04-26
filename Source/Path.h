@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 class InputStream;
 

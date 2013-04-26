@@ -1,7 +1,7 @@
 #ifndef SFZSound_h
 #define SFZSound_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 #include "SFZRegion.h"
 #include "Synthesizer.h"
 
@@ -11,6 +11,7 @@ class SFZSample;
 class SFZSound : public SynthesizerSound {
 	public:
 		SFZSound(const Path& file);
+        SFZSound(std::string path);
 		virtual ~SFZSound();
 
 		bool	appliesToNote(const int midiNoteNumber);

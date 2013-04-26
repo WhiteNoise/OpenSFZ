@@ -98,7 +98,8 @@ void SF2Sound::useSubsound(int whichSubsound)
 	selectedPreset = whichSubsound;
 	regions.clear();
     
-    addRegion(presets[whichSubsound]->regions);
+    for(int i=0; i<presets[whichSubsound]->regions.size(); i++)
+        addRegion(presets[whichSubsound]->regions[i]);
 
 }
 

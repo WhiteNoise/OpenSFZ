@@ -1,7 +1,7 @@
 #ifndef SFZReader_h
 #define SFZReader_h
 
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 class SFZRegion;
 class SFZSound;

@@ -1,6 +1,10 @@
+#include "SFZCommon.h"
+
 #include "SFZSynth.h"
 #include "SFZVoice.h"
 #include "SFZSound.h"
+
+
 
 
 SFZSynth::SFZSynth()
@@ -39,11 +43,11 @@ void SFZSynth::noteOn(
 	// Are any notes playing?  (Needed for first/legato trigger handling.)
 	// Also stop any voices still playing this note.
 	bool anyNotesPlaying = false;
-	for (i = voices.size(); --i >= 0;) {
-		SFZVoice* voice = dynamic_cast<SFZVoice*>(voices.getUnchecked(i));
+	for (i=0; i<voices.size(); i++) {
+		SFZVoice* voice = dynamic_cast<SFZVoice*>(voices[i]);
 		if (voice == NULL)
 			continue;
-		if (voice->isPlayingChannel(midiChannel)) {
+		//if (voice->isPlayingChannel(midiChannel)) {
 			if (voice->isPlayingNoteDown()) {
 				if (voice->getCurrentlyPlayingNote() == midiNoteNumber) {
 					if (!voice->isPlayingOneShot())
@@ -53,7 +57,7 @@ void SFZSynth::noteOn(
 					anyNotesPlaying = true;
 				}
 			}
-		}
+		//}
 
 	// Play *all* matching regions.
 	SFZRegion::Trigger trigger =
@@ -65,7 +69,7 @@ void SFZSynth::noteOn(
 			if (region->matches(midiNoteNumber, midiVelocity, trigger)) {
 				SFZVoice* voice =
 					dynamic_cast<SFZVoice*>(
-						findFreeVoice(sound, isNoteStealingEnabled()));
+						findFreeVoice(sound, noteStealingEnabled));
 				if (voice) {
 					voice->setRegion(region);
 					startVoice(voice, sound, midiChannel, midiNoteNumber, velocity);
@@ -120,25 +124,26 @@ int SFZSynth::numVoicesUsed()
 }
 
 
-String SFZSynth::voiceInfoString()
+std::string SFZSynth::voiceInfoString()
 {
 	enum {
 		maxShownVoices = 20,
 		};
 
-	StringArray lines;
+    std::stringstream ss;
+    
 	int numUsed = 0, numShown = 0;
-	for (int i = voices.size(); --i >= 0;) {
-		SFZVoice* voice = dynamic_cast<SFZVoice*>(voices.getUnchecked(i));
+	for (int i=0; i<voices.size(); i++) {
+		SFZVoice* voice = dynamic_cast<SFZVoice*>(voices[i]);
 		if (voice->getCurrentlyPlayingNote() < 0)
 			continue;
 		numUsed += 1;
 		if (numShown >= maxShownVoices)
 			continue;
-		lines.add(voice->infoString());
+		ss << "\n" << (voice->infoString());
 		}
-	lines.insert(0, "voices used: " + String(numUsed));
-	return lines.joinIntoString("\n");
+	ss << "voices used: " << numUsed;
+    return ss.str();
 }
 
 

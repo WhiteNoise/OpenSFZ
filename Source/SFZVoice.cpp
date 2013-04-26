@@ -1,4 +1,4 @@
-#include "OpenSFZ.h"
+#include "SFZCommon.h"
 
 #include "SFZVoice.h"
 #include "SFZSound.h"
