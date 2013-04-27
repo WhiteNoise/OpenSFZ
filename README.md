@@ -12,3 +12,53 @@ License
 =======
 
 This project is available under the MIT license. You may use it in commercial projects.
+
+Simple Example
+==============
+
+
+
+    #include "OpenSFZ.h"
+    
+    ....
+    // initialization:
+    
+        synth = new SFZSynth();
+        
+        SFZSound *testSound = new SFZSound(std::string("/Users/dwallin/Downloads/FM-House-Bass/FM-House-Bass.sfz"));
+        
+        synth->addSound(testSound);
+    
+        testSound->dump();    // print out debug info
+        
+        synth->setCurrentPlaybackSampleRate(SongInfo::getSampleRate());
+    
+  
+    // just handle midi events and call the appropriate functions on the SFZSynth class. 
+    // OpenSFZ doesn't have any midi specific code or classes. This is purely for example purposs.
+    
+        if(e->eventType == Event::EVENT_NOTEON)
+        {
+            synth->noteOn(1, e->iData[0], e->rData[0]);
+        } else if(e->eventType == Event::EVENT_NOTEOFF)
+        {
+            synth->noteOff(1, e->iData[0], true);
+        } else if(e->eventType == Event::EVENT_ALLNOTESOFF)
+        {
+            synth->allNotesOff(1, false);
+        } else if(e->eventType == Event::EVENT_CC)
+        {
+            if(e->iData[0] == 121 || e->iData[0] == 123)
+            {
+                synth->allNotesOff(1, true);
+            }
+        }
+    
+    // Audio processing. Call something like this in your audio processing callback loop: 
+        SFZAudioBuffer buffer((int)numSamples,
+                              audioOutLeftChannelPointer,
+                              audioOutRightChannelPointer);
+        
+        synth->renderNextBlock(buffer, 0, (int)numSamples);
+        
+    // that's it
