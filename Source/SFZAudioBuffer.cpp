@@ -9,10 +9,20 @@
 #include "SFZAudioBuffer.h"
 
 
-SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const int numSamples_)
+SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned long numSamples_)
 {
+    channels[0] = 0;
+    channels[1] = 0;
+    
     numSamples = numSamples_;
-
+    
+    if(numSamples < 0 || numSamples > 158760000)
+    {
+        owned = false;
+        channels[0] = 0;
+        return;
+    }
+    
     int c = numChannels_;
     
     if(c > 2)
@@ -24,7 +34,7 @@ SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const int numSamples_)
     {
         channels[i] = new float[numSamples + 5];
         
-        for(int j=0; j< numSamples + 5; j++)
+        for(unsigned long j=0; j< numSamples + 5; j++)
             channels[i][j] = 0.0f;
     }
     owned = true;
@@ -56,7 +66,7 @@ SFZAudioBuffer::~SFZAudioBuffer()
     }
 }
 
-SFZAudioBuffer::SFZAudioBuffer(const int numSamples_, float *channel1, float *channel2)
+SFZAudioBuffer::SFZAudioBuffer(const unsigned long numSamples_, float *channel1, float *channel2)
 {
     owned = false;
     numChannels = 2;

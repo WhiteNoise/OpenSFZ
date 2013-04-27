@@ -24,13 +24,15 @@ private:
 	int   	myByteRate;
 	short 	myBlockAlign;
 	short 	myBitsPerSample;
+	int	myDataSize;
+    
 	double position, recordPosition;
 	double speed;
 	double output;
 
 	
 public:
-	int	myDataSize;
+
 	short 	myChannels;
 	int   	mySampleRate;
 
@@ -60,11 +62,6 @@ public:
 
 	
 	
-	// read a wav file into this class
-	bool read();
-	
-	//read an ogg file into this class using stb_vorbis
-    bool readOgg();
     
     
     void clear();
@@ -81,7 +78,13 @@ public:
 		return summary;
 	}
 private:
-    	long length;
+	// read a wav file into this class
+	bool readWav();
+	//read an ogg file into this class using stb_vorbis
+    bool readOgg();
+
+    
+    long length;
 };
 
 

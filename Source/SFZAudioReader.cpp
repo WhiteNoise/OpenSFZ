@@ -25,15 +25,17 @@ SFZAudioReader::SFZAudioReader()
 bool SFZAudioReader::load(string fileName) {
 	myPath = fileName;
 
-    if(buffer)
+    if(buffer) {
         delete buffer;
+        buffer = 0;
+    }
     
     Path p(fileName);
     std::string ext = p.getExtension();
     if(ext == "ogg")
         return readOgg();
     else if(p.getExtension() == "wav")
-        return read();
+        return readWav();
     
     return false;
 }
@@ -77,7 +79,7 @@ bool SFZAudioReader::readOgg() {
 
 
 //This is the main read function.
-bool SFZAudioReader::read()
+bool SFZAudioReader::readWav()
 {
 	bool result;
 	ifstream inFile( myPath.c_str(), ios::in | ios::binary);
@@ -132,23 +134,54 @@ bool SFZAudioReader::read()
 		myData = (char*) malloc(myDataSize * sizeof(char));
 		inFile.seekg(filePos, ios::beg);
 		inFile.read(myData, myDataSize);
-		length=myDataSize/(2 * myChannels);
+		length=myDataSize/((myBitsPerSample / 8) * myChannels);
 		inFile.close(); // close the input file
 		
         buffer = new SFZAudioBuffer(myChannels, length);
         int position = 0;
         
         
-        
-        short int *temp;
-        
         if(myBitsPerSample == 16)
         {
+            short int *temp;
+
             temp = (short int *)&myData[0];
+            
+            // FIXME: endian swap?
             
                 for(int i=0; i<length; i++)
                     for(int j=0; j<myChannels; j++)
                         buffer->channels[j][i] = (float)temp[position++] / 32768.0f;
+        }
+        else if(myBitsPerSample == 24)
+        {
+            // FIXME: endian swap?
+            
+            for(int i=0; i<length; i++)
+                for(int j=0; j<myChannels; j++)
+                {
+                    
+                    int32_t sample = (unsigned char)myData[position+2];
+                    sample = (sample << 8) | (unsigned char)myData[position+1];
+                    sample = (sample << 8) | (unsigned char)myData[position];
+                    sample <<= 8;
+                    
+                    buffer->channels[j][i] = (float)((double)sample / (double)INT32_MAX);
+                    
+                    position += 3;
+                }
+        }
+        else if(myBitsPerSample == 32)
+        {
+            // FIXME: endian swap?
+            
+            int32_t *temp;
+            
+            temp = (int32_t *)&myData[0];
+            
+            for(int i=0; i<length; i++)
+                for(int j=0; j<myChannels; j++)
+                    buffer->channels[j][i] = (float)((double)temp[position++] / (double)INT32_MAX);
         }
         
         
