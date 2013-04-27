@@ -10,9 +10,12 @@ bool SFZSample::load()
     loader.load(fileName);
     buffer = loader.buffer;
     sampleRate = loader.mySampleRate;
-    sampleLength = loader.myDataSize;
+    sampleLength = loader.getLength();
     loopStart = 0;
     loopEnd = 0;
+    
+
+    
     //loopStart = loader.loopStart;
     //loopEnd = loader.loopEnd;
     
@@ -56,6 +59,9 @@ std::string SFZSample::getShortName()
 
 void SFZSample::setBuffer(SFZAudioBuffer* newBuffer)
 {
+    if(buffer)
+        delete buffer;
+    
 	buffer = newBuffer;
 	sampleLength = buffer->getNumSamples();
 }
@@ -73,7 +79,7 @@ void SFZSample::dump()
 {
 
 
-	printf("%s\n", fileName.c_str());
+	printf("%s\n %s\n", fileName.c_str(), loader.getSummary());
 }
 
 

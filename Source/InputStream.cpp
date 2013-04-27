@@ -62,9 +62,9 @@ int InputStream::readShort()
     
     read(&shortBuf, 2);
     
-    // FIXME: endianness?
+    // FIXME: endianness? is this right?
     
-    i = shortBuf[0] + (int)shortBuf[1]<<8;
+    i = shortBuf[0] + ((int)shortBuf[1]<<8);
     
     return i;
 }

@@ -15,6 +15,7 @@ public:
     Path getParentDirectory() const;
     std::string getFileName() const;
     std::string getFileNameWithoutExtension() const;
+    std::string getExtension() const;
     Path getChildFile (std::string relativePath) const;
     Path getSiblingFile (const std::string& fileName) const;
     std::string addTrailingSeparator (const std::string& path) const;

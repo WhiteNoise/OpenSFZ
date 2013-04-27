@@ -57,8 +57,7 @@ public:
     SFZAudioReader();
     
 	bool load(std::string fileName);
-    
-    bool loadOgg(std::string filename);
+
 	
 	
 	// read a wav file into this class

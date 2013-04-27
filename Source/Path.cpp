@@ -1,6 +1,8 @@
 #include "Path.h"
 #include "InputStream.h"
 
+#include <algorithm>
+
 const char Path::separator = '/';
 const std::string Path::separatorString("/");
 
@@ -50,6 +52,23 @@ std::string Path::getFileNameWithoutExtension() const
     else
         return fullPath.substr (lastSlash);
 }
+
+std::string Path::getExtension() const
+{
+    int lastDot   = fullPath.find_last_of ('.');
+    
+    
+    if(lastDot == std::string::npos)
+        return std::string("");
+
+    
+    std::string ext = fullPath.substr (lastDot + 1);
+    
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    
+    return ext;
+}
+
 
 Path Path::getChildFile (std::string relativePath) const
 {

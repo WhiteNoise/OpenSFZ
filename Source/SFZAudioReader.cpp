@@ -10,6 +10,7 @@
 #include "SFZAudioReader.h"
 #include "stb_vorbis.h"
 
+#include <assert.h>
 
 using namespace std;
 
@@ -26,18 +27,26 @@ bool SFZAudioReader::load(string fileName) {
 
     if(buffer)
         delete buffer;
-	return read();
+    
+    Path p(fileName);
+    std::string ext = p.getExtension();
+    if(ext == "ogg")
+        return readOgg();
+    else if(p.getExtension() == "wav")
+        return read();
+    
+    return false;
 }
 
 // This is for OGG loading
-bool SFZAudioReader::loadOgg(string fileName) {
+bool SFZAudioReader::readOgg() {
 #ifdef VORBIS
     bool result;
     short *temp;
     
     int channelx;
     //    cout << fileName << endl;
-    myDataSize = stb_vorbis_decode_filename(const_cast<char*>(fileName.c_str()), &channelx, &temp);
+    myDataSize = stb_vorbis_decode_filename(const_cast<char*>(myPath.c_str()), &channelx, &temp);
     result = myDataSize > 0;
     
     printf("\nchannels = %d\nlength = %d",channelx,myDataSize);
@@ -47,11 +56,13 @@ bool SFZAudioReader::loadOgg(string fileName) {
     length=myDataSize;
     mySampleRate=44100;
     
+    assert(myDataSize > 0);
+    
     buffer = new SFZAudioBuffer(myChannels, myDataSize);
     
     if (myChannels>1) {
         int position=0;
-        for (int i=0;i<myDataSize;i++) {
+        for (int i=0;i<myDataSize; i++) {
             for(int j=0; j<myChannels; j++)
             {
                 buffer->channels[j][i] = (float)temp[position] / 32768.0f;
@@ -96,6 +107,7 @@ bool SFZAudioReader::read()
 		
 		//inFile.seekg(34, ios::beg);
 		inFile.read( (char*) &myBitsPerSample, sizeof(short) ); // read the bitspersample
+                
 		
 		//ignore any extra chunks
 		char chunkID[5]="";
@@ -125,9 +137,19 @@ bool SFZAudioReader::read()
 		
         buffer = new SFZAudioBuffer(myChannels, length);
         int position = 0;
-        for(int i=0; i<length; i++)
-            for(int j=0; j<myChannels; j++)
-                buffer->channels[j][i] = (float)myData[position++] / 32768.0f;
+        
+        
+        
+        short int *temp;
+        
+        if(myBitsPerSample == 16)
+        {
+            temp = (short int *)&myData[0];
+            
+                for(int i=0; i<length; i++)
+                    for(int j=0; j<myChannels; j++)
+                        buffer->channels[j][i] = (float)temp[position++] / 32768.0f;
+        }
         
         
         delete myData;
