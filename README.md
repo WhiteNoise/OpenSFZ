@@ -26,9 +26,12 @@ Simple Example
         synth = new SFZSynth();
         
         SFZSound *testSound = new SFZSound(std::string("/Users/dwallin/Downloads/FM-House-Bass/FM-House-Bass.sfz"));
-        
-        synth->addSound(testSound);
     
+        synth->addSound(testSound);
+
+        testSound->loadRegions();
+        testSound->loadSamples();
+
         testSound->dump();    // print out debug info
         
         synth->setCurrentPlaybackSampleRate(SongInfo::getSampleRate());
