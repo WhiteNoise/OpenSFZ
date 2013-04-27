@@ -7,28 +7,27 @@ using namespace std;
 
 SFZSound::SFZSound(std::string sz)
 {
-    file = Path(sz);
-    // Why not?
-    loadRegions();
-    double d;
-    loadSamples(&d);
-    dump();
+    setFile(Path(sz));
 }
 
 SFZSound::SFZSound(const Path& fileIn)
-	: file(fileIn)
 {
-    // Why not?
-    loadRegions();
-    double d;
-    loadSamples(&d);
-    dump();
+    setFile(fileIn);
 }
+
+void SFZSound::setFile(const Path &p)
+{
+	file = Path(p);
+    
+
+    
+}
+
 
 
 SFZSound::~SFZSound()
 {
-	int numRegions = regions.size();
+	int numRegions = (int)regions.size();
 	for (int i = 0; i < numRegions; ++i) {
 		delete regions[i];
     }
@@ -65,10 +64,6 @@ void SFZSound::addRegion(SFZRegion* region)
 SFZSample* SFZSound::addSample(string pathStr, string defaultPathStr)
 {
     
-	//path = path.replaceCharacter('\\', '/');
-	//defaultPath = defaultPath.replaceCharacter('\\', '/');
-
-
 	Path sampleFile;
 	if (defaultPathStr.length() == 0)
 		sampleFile = file.getSiblingFile(pathStr);
@@ -135,7 +130,7 @@ void SFZSound::loadSamples(	double* progressVar)
 SFZRegion* SFZSound::getRegionFor(
 	int note, int velocity, SFZRegion::Trigger trigger)
 {
-	int numRegions = regions.size();
+	int numRegions = (int)regions.size();
 	for (int i = 0; i < numRegions; ++i) {
 		SFZRegion* region = regions[i];
 		if (region->matches(note, velocity, trigger))
@@ -148,7 +143,7 @@ SFZRegion* SFZSound::getRegionFor(
 
 int SFZSound::getNumRegions()
 {
-	return regions.size();
+	return (int)regions.size();
 }
 
 
@@ -161,7 +156,7 @@ SFZRegion* SFZSound::regionAt(int index)
 string SFZSound::getErrorsString()
 {
 	string result;
-	int numErrors = errors.size();
+	int numErrors = (int)errors.size();
 	for (int i = 0; i < numErrors; ++i)
 		result += errors[i] + "\n";
 

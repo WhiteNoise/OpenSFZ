@@ -22,6 +22,7 @@ class SFZSound : public SynthesizerSound {
 		void	addError(const std::string& message);
 		void	addUnsupportedOpcode(const std::string& opcode);
 
+
 		virtual void	loadRegions();
 		virtual void	loadSamples(double* progressVar = NULL);
 
@@ -40,6 +41,7 @@ class SFZSound : public SynthesizerSound {
 		void	dump();
 
 	protected:
+    void setFile(const Path &p);
 		Path 	file;
         std::vector<SFZRegion*>	regions;
         std::map<std::string, SFZSample*>	samples;

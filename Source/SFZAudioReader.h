@@ -3,8 +3,13 @@
 //  OpenSFZ
 //
 //  Created by David Wallin on 4/23/13.
-//  Copyright (c) 2013 David Wallin. All rights reserved.
 //
+//  This file originally comes from Maximillian
+//  https://github.com/micknoise/Maximilian
+//  but includes updates to read more types of files, loop points etc.
+//
+//  Utilizes the stb_vorbis code for ogg reading.
+//  http://www.nothings.org/stb_vorbis/
 
 #ifndef __OpenSFZ__SFZAudioReader__
 #define __OpenSFZ__SFZAudioReader__
@@ -26,12 +31,69 @@ private:
 	short 	myBitsPerSample;
 	int	myDataSize;
     
+    long dataChunkPos;
+    long smplChunkPos;
+    
+    long smplChunkSize;
+    
 	double position, recordPosition;
 	double speed;
 	double output;
 
+    struct TSamplerChunk
+	{
+		int32_t dwManufacturer;
+		int32_t dwProduct;
+		int32_t dwSamplePeriod;
+		int32_t dwMIDIUnityNote;
+		int32_t dwMIDIPitchFraction;
+		int32_t dwSMPTEFormat;
+		int32_t dwSMPTEOffset;
+		int32_t cSampleLoops;
+		int32_t cbSamplerData;
+		
+		TSamplerChunk() :
+            dwManufacturer(0),
+            dwProduct(0),
+            dwSamplePeriod(0),
+            dwMIDIUnityNote(0),
+            dwMIDIPitchFraction(0),
+            dwSMPTEFormat(0),
+            dwSMPTEOffset(0),
+            cSampleLoops(0),
+            cbSamplerData(0)
+		{
+		}
+	};
+    
+	struct TSampleLoop
+	{
+		int32_t dwIdentifier;
+		int32_t dwType;
+		int32_t dwStart;
+		int32_t dwEnd;
+		int32_t dwFraction;
+		int32_t dwPlayCount;
+		
+		TSampleLoop() :
+        dwIdentifier(0),
+        dwType(0),
+        dwStart(0),
+        dwEnd(0),
+        dwFraction(0),
+        dwPlayCount(0)
+		{
+		}
+	};
 	
+	TSamplerChunk samplerChunk;
+	TSampleLoop sampleLoop;
+
+    int32_t parseSMPLChunk(std::ifstream &f, long dataLength);
 public:
+    
+    int     loopStart;
+    int     loopEnd;
 
 	short 	myChannels;
 	int   	mySampleRate;

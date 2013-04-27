@@ -62,10 +62,12 @@ int InputStream::readShort()
     
     read(&shortBuf, 2);
     
-    // FIXME: endianness? is this right?
-    
-    i = shortBuf[0] + ((int)shortBuf[1]<<8);
-    
+
+#ifdef SFZ_BIGENDIAN
+    i = (int)shortBuf[1] + ((int)shortBuf[0]<<8);
+#else
+    i = (int)shortBuf[0] + ((int)shortBuf[1]<<8);
+#endif
     return i;
 }
 

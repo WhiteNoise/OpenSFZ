@@ -1,10 +1,16 @@
-   //
+//
 //  SFZAudioReader.cpp
 //  OpenSFZ
 //
 //  Created by David Wallin on 4/23/13.
-//  Copyright (c) 2013 David Wallin. All rights reserved.
 //
+//  This file originally comes from Maximillian
+//  https://github.com/micknoise/Maximilian
+//  but includes updates to read more types of files, loop points etc.
+//
+//  Utilizes the stb_vorbis code for ogg reading.
+//  http://www.nothings.org/stb_vorbis/
+
 #include <stdio.h>
 
 #include "SFZAudioReader.h"
@@ -18,6 +24,8 @@ SFZAudioReader::SFZAudioReader()
 : myData(NULL), position(0), recordPosition(0), myChannels(1), buffer(0), mySampleRate(44100.0f)
 {
     length = 0;
+    loopStart = 0;
+    loopEnd = 0;
 };
 
 
@@ -114,25 +122,48 @@ bool SFZAudioReader::readWav()
 		//ignore any extra chunks
 		char chunkID[5]="";
 		chunkID[4] = 0;
-		int filePos = 36;
-		while(!datafound && !inFile.eof()) {
+		long filePos = 36;
+        
+
+        inFile.seekg (0, inFile.end);
+        long fileLength = inFile.tellg();
+        
+        // !datafound &&
+        
+		while(filePos < fileLength && !inFile.eof()) {
+            int chunkSize;
+            
 			inFile.seekg(filePos, ios::beg);
 			inFile.read((char*) &chunkID, sizeof(char) * 4);
 			inFile.seekg(filePos + 4, ios::beg);
-			inFile.read( (char*) &myDataSize, sizeof(int) ); // read the size of the data
+			inFile.read( (char*) &chunkSize, sizeof(int) ); // read the size of the data
 			filePos += 8;
-			if (strcmp(chunkID,"data") == 0) {
+			if (strcmp(chunkID,"data") == 0 && !datafound) {
+                myDataSize = chunkSize;
+                dataChunkPos = filePos;
 				datafound = true;
-			}else{
-				filePos += myDataSize;
-			}
+			} else if (strcmp(chunkID,"smpl") == 0) {
+                smplChunkSize = chunkSize;
+                smplChunkPos = filePos;
+
+                inFile.seekg(filePos, ios::beg);
+                
+                parseSMPLChunk(inFile, chunkSize);
+                
+                loopStart = sampleLoop.dwStart;
+                loopEnd = sampleLoop.dwEnd;
+            }
+            
+            
+            filePos += chunkSize;
+
 		}
         
         // FIXME: need to handle sample looping chunks, etc..
 		
 		// read the data chunk
 		myData = (char*) malloc(myDataSize * sizeof(char));
-		inFile.seekg(filePos, ios::beg);
+		inFile.seekg(dataChunkPos, ios::beg);
 		inFile.read(myData, myDataSize);
 		length=myDataSize/((myBitsPerSample / 8) * myChannels);
 		inFile.close(); // close the input file
@@ -198,6 +229,23 @@ bool SFZAudioReader::readWav()
 	return result; // this should probably be something more descriptive
 }
 
+
+int32_t SFZAudioReader::parseSMPLChunk(ifstream &f, long dataLength)
+{
+    // FIXME: endian swap?
+    
+	f.read((char *)&samplerChunk, sizeof(TSamplerChunk));
+	
+	if (samplerChunk.cSampleLoops)
+	{
+        // just read the first one?
+		f.read((char *)&sampleLoop, sizeof(TSampleLoop));
+	}
+    
+    
+    
+
+}
 
 
 

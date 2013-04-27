@@ -11,8 +11,8 @@ bool SFZSample::load()
     buffer = loader.buffer;
     sampleRate = loader.mySampleRate;
     sampleLength = loader.getLength();
-    loopStart = 0;
-    loopEnd = 0;
+    loopStart = loader.loopStart;
+    loopEnd = loader.loopEnd;
     
 
     

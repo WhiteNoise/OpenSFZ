@@ -14,5 +14,5 @@
 #include "../Source/SFZSound.h"
 #include "../Source/SFZVoice.h"
 #include "../Source/SFZSynth.h"
-
+#include "../Source/SF2Sound.h"
 #endif

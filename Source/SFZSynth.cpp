@@ -7,9 +7,16 @@
 
 
 
-SFZSynth::SFZSynth()
+SFZSynth::SFZSynth(int numVoices)
 	: Synthesizer()
 {
+    
+    for(int i=0; i<numVoices; i++)
+    {
+        SFZVoice *voice = new SFZVoice();
+        
+        addVoice(voice);
+    }
 }
 
 
