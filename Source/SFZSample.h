@@ -7,7 +7,7 @@
 class SFZSample {
 	public:
     SFZSample(const std::string& fileIn)
-			: loopStart(0), loopEnd(0), fileName(fileIn), buffer(NULL) {}
+			: loopStart(0), loopEnd(0), fileName(fileIn), buffer(NULL), sampleRate(44100.0f) {}
 		SFZSample(double sampleRateIn)
 			: sampleLength(0), loopStart(0), loopEnd(0),
 			  buffer(NULL), sampleRate(sampleRateIn) {}

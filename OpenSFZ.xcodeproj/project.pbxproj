@@ -54,10 +54,6 @@
 		A7CB312D17276C2E00F34741 /* SFZAudioReader.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB312B17276C2B00F34741 /* SFZAudioReader.h */; };
 		A7CB313017276CB400F34741 /* stb_vorbis.c in Sources */ = {isa = PBXBuildFile; fileRef = A7CB312E17276CB000F34741 /* stb_vorbis.c */; };
 		A7CB313117276CB400F34741 /* stb_vorbis.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB312F17276CB100F34741 /* stb_vorbis.h */; };
-		A7CB31361727F27300F34741 /* XMFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB31341727F26F00F34741 /* XMFile.cpp */; };
-		A7CB31371727F27300F34741 /* XMFile.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB31351727F27100F34741 /* XMFile.h */; };
-		A7CB31391727F2BE00F34741 /* MilkyPlayCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB31381727F2BC00F34741 /* MilkyPlayCommon.h */; };
-		A7CB313B1727F2E700F34741 /* MilkyPlayTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB313A1727F2E600F34741 /* MilkyPlayTypes.h */; };
 		A7CB313E1728AEC000F34741 /* InputStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB313C1728AEBC00F34741 /* InputStream.cpp */; };
 		A7CB313F1728AEC000F34741 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB313D1728AEBE00F34741 /* InputStream.h */; };
 		A7CB31421728B24F00F34741 /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB31401728B24B00F34741 /* Path.cpp */; };
@@ -114,10 +110,6 @@
 		A7CB312B17276C2B00F34741 /* SFZAudioReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFZAudioReader.h; sourceTree = "<group>"; };
 		A7CB312E17276CB000F34741 /* stb_vorbis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stb_vorbis.c; sourceTree = "<group>"; };
 		A7CB312F17276CB100F34741 /* stb_vorbis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_vorbis.h; sourceTree = "<group>"; };
-		A7CB31341727F26F00F34741 /* XMFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMFile.cpp; sourceTree = "<group>"; };
-		A7CB31351727F27100F34741 /* XMFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMFile.h; sourceTree = "<group>"; };
-		A7CB31381727F2BC00F34741 /* MilkyPlayCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MilkyPlayCommon.h; sourceTree = "<group>"; };
-		A7CB313A1727F2E600F34741 /* MilkyPlayTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MilkyPlayTypes.h; sourceTree = "<group>"; };
 		A7CB313C1728AEBC00F34741 /* InputStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputStream.cpp; sourceTree = "<group>"; };
 		A7CB313D1728AEBE00F34741 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputStream.h; sourceTree = "<group>"; };
 		A7CB31401728B24B00F34741 /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path.cpp; sourceTree = "<group>"; };
@@ -158,8 +150,6 @@
 			children = (
 				A7CB313C1728AEBC00F34741 /* InputStream.cpp */,
 				A7CB313D1728AEBE00F34741 /* InputStream.h */,
-				A7CB31381727F2BC00F34741 /* MilkyPlayCommon.h */,
-				A7CB313A1727F2E600F34741 /* MilkyPlayTypes.h */,
 				A7CB31401728B24B00F34741 /* Path.cpp */,
 				A7CB31411728B24C00F34741 /* Path.h */,
 				A7CB307117261D5C00F34741 /* RIFF.cpp */,
@@ -199,8 +189,6 @@
 				A7CB30CE1726354A00F34741 /* Synthesizer.cpp */,
 				A7CB30CF1726354A00F34741 /* Synthesizer.h */,
 				A7CB309C17261D5C00F34741 /* WinTypes.h */,
-				A7CB31341727F26F00F34741 /* XMFile.cpp */,
-				A7CB31351727F27100F34741 /* XMFile.h */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -260,9 +248,6 @@
 				A7CB30D31726370300F34741 /* SFZCommon.h in Headers */,
 				A7CB312D17276C2E00F34741 /* SFZAudioReader.h in Headers */,
 				A7CB313117276CB400F34741 /* stb_vorbis.h in Headers */,
-				A7CB31371727F27300F34741 /* XMFile.h in Headers */,
-				A7CB31391727F2BE00F34741 /* MilkyPlayCommon.h in Headers */,
-				A7CB313B1727F2E700F34741 /* MilkyPlayTypes.h in Headers */,
 				A7CB313F1728AEC000F34741 /* InputStream.h in Headers */,
 				A7CB31431728B24F00F34741 /* Path.h in Headers */,
 				A7F17203172A0A6D00F17088 /* OpenSFZ.h in Headers */,
@@ -336,7 +321,6 @@
 				A7CB30D01726354C00F34741 /* Synthesizer.cpp in Sources */,
 				A7CB312C17276C2E00F34741 /* SFZAudioReader.cpp in Sources */,
 				A7CB313017276CB400F34741 /* stb_vorbis.c in Sources */,
-				A7CB31361727F27300F34741 /* XMFile.cpp in Sources */,
 				A7CB313E1728AEC000F34741 /* InputStream.cpp in Sources */,
 				A7CB31421728B24F00F34741 /* Path.cpp in Sources */,
 				A73FB588172A27C600C80C7F /* SFZCommon.cpp in Sources */,
@@ -407,9 +391,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -419,9 +404,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

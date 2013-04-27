@@ -22,23 +22,24 @@ void SFZReader::read(const Path& file)
     
     
     std::ifstream t;
-    long length;
+    unsigned int length;
     
     t.open(file.getFullPath().c_str());      // open input file
     
     if(!t.good())
     {
-        sound->addError("Couldn't read \"" + file.getFullPath() + "\"");        
+        sound->addError("Couldn't read \"" + file.getFullPath() + "\"");
+        return;
     }
     
     t.seekg(0, std::ios::end);    // go to the end
-    length = t.tellg();           // report location (this is the length)
+    length = (unsigned int)t.tellg();           // report location (this is the length)
     t.seekg(0, std::ios::beg);    // go back to the beginning
     char *buffer = new char[length];    // allocate memory for a buffer of appropriate dimension
     t.read(buffer, length);       // read the whole file into the buffer
     t.close();
 
-	read((const char*) buffer, length);
+	read((const char*) buffer, (unsigned int)length);
     
     delete buffer;
 }
@@ -90,15 +91,19 @@ void SFZReader::read(const char* text, unsigned int length)
 			c = *p;
 
 			// Tag.
-			if (c == '<') {
+			if (c == '<')
+            {
 				p += 1;
 				const char* tagStart = p;
-				while (p < end) {
+                
+				while (p < end)
+                {
 					c = *p++;
-					if (c == '\n' || c == '\r') {
+					if (c == '\n' || c == '\r')
+                    {
 						error("Unterminated tag");
 						goto fatalError;
-						}
+                    }
 					else if (c == '>')
 						break;
 					}
@@ -107,23 +112,29 @@ void SFZReader::read(const char* text, unsigned int length)
 					goto fatalError;
 					}
 				StringSlice tag(tagStart, p - 1);
-				if (tag == "region") {
+				if (tag == "region")
+                {
 					if (buildingRegion && buildingRegion == &curRegion)
 						finishRegion(&curRegion);
+                    
 					curRegion = curGroup;
 					buildingRegion = &curRegion;
 					inControl = false;
-					}
-				else if (tag == "group") {
+                }
+				else if (tag == "group")
+                {
 					if (buildingRegion && buildingRegion == &curRegion)
 						finishRegion(&curRegion);
+                    
 					curGroup.clear();
 					buildingRegion = &curGroup;
 					inControl = false;
-					}
-				else if (tag == "control") {
+                }
+				else if (tag == "control")
+                {
 					if (buildingRegion && buildingRegion == &curRegion)
 						finishRegion(&curRegion);
+                    
 					curGroup.clear();
 					buildingRegion = NULL;
 					inControl = true;
@@ -133,15 +144,17 @@ void SFZReader::read(const char* text, unsigned int length)
 				}
 
 			// Comment.
-			else if (c == '/') {
+			else if (c == '/')
+            {
 				// Skip to end of line.
-				while (p < end) {
+				while (p < end)
+                {
 					c = *p;
 					if (c == '\r' || c == '\n')
 						break;
 					p += 1;
-					}
-				}
+                }
+            }
 
 			// Parameter.
 			else {
@@ -152,10 +165,11 @@ void SFZReader::read(const char* text, unsigned int length)
 					if (c == '=' || c == ' ' || c == '\t' || c == '\r' || c == '\n')
 						break;
 					}
-				if (p >= end || c != '=') {
+				if (p >= end || c != '=')
+                {
 					error("Malformed parameter");
 					goto nextElement;
-					}
+                }
 				StringSlice opcode(parameterStart, p - 1);
 				if (inControl) {
 					if (opcode == "default_path")
@@ -192,7 +206,7 @@ void SFZReader::read(const char* text, unsigned int length)
 						if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
 							break;
 						p++;
-						}
+                    }
                     std::string value(valueStart, p - valueStart);
                     
                     std::istringstream ss(value);
@@ -319,12 +333,13 @@ void SFZReader::read(const char* text, unsigned int length)
 			// Skip to next element.
 nextElement:
 			c = 0;
-			while (p < end) {
+			while (p < end)
+            {
 				c = *p;
 				if (c != ' ' && c != '\t')
 					break;
 				p += 1;
-				}
+            }
 			if (c == '\r' || c == '\n') {
 				p = handleLineEnd(p);
 				break;
@@ -340,10 +355,11 @@ fatalError:
 
 const char* SFZReader::handleLineEnd(const char* p)
 {
+
 	// Check for DOS-style line ending.
 	char lineEndChar = *p++;
 	if (lineEndChar == '\r' && *p == '\n')
-		p += 1;
+		p = p + 1;
 	line += 1;
 	return p;
 }
@@ -382,15 +398,17 @@ const char* SFZReader::readPathInto(
 		// Can't do this:
 		//  	std::string path(CharPointer_UTF8(pathStart), CharPointer_UTF8(p));
 		// It won't compile for some unfathomable reason.
+
         
-        std::string path(pathStart, pathStart - p);
+        
+        std::string path(pathStart, p - pathStart);
         
 //		CharPointer_UTF8 end(p);
 		//String path(CharPointer_UTF8(pathStart), p);
 		*pathOut = path;
 		}
 	else
-		*pathOut = std::string("");
+		*pathOut = "";
 	return p;
 }
 

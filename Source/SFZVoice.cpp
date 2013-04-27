@@ -5,6 +5,7 @@
 #include "SFZRegion.h"
 #include "SFZSample.h"
 #include <math.h>
+#include <assert.h>
 
 static const float globalGain = -1.0;
 
@@ -12,6 +13,21 @@ static const float globalGain = -1.0;
 SFZVoice::SFZVoice()
 	: region(NULL)
 {
+    trigger = 0;
+    
+    curMidiNote = 0;
+    curPitchWheel = 0;
+    pitchRatio = 1.0;
+    noteGainLeft = 1.0;
+    noteGainRight = 1.0;
+    sourceSamplePosition = 0.0f;
+    sampleEnd = 0;
+    loopStart = 0, loopEnd = 0;
+    
+    // Info only.
+    numLoops = 0;
+    curVelocity = 0;
+    
 	ampeg.setExponentialDecay(true);
 }
 
@@ -181,6 +197,9 @@ void SFZVoice::renderNextBlock(
 
 	while (--numSamples >= 0) {
 		int pos = (int) sourceSamplePosition;
+        
+        assert(pos >= 0 && pos < buffer->getNumSamples());
+        
 		float alpha = (float) (sourceSamplePosition - pos);
 		float invAlpha = 1.0f - alpha;
 		int nextPos = pos + 1;
@@ -200,7 +219,7 @@ void SFZVoice::renderNextBlock(
 		if (outR) {
 			*outL++ += l;
 			*outR++ += r;
-			}
+        }
 		else
 			*outL++ += (l + r) * 0.5f;
 

@@ -51,7 +51,7 @@ Synthesizer::Synthesizer()
     lastNoteOnCounter = 0;
     
     for(int i=0; i<16; i++)
-        lastPitchWheelValues[i] = 0;
+        lastPitchWheelValues[i] = 0x2000;
 }
 
 Synthesizer::~Synthesizer()
@@ -188,6 +188,12 @@ void Synthesizer::handleController (int midiChannel,
 void Synthesizer::setCurrentPlaybackSampleRate (double sampleRate_)
 {
 	sampleRate = sampleRate_;
+    
+	for(int i=0; i<voices.size(); i++)
+	{
+        voices[i]->setCurrentPlaybackSampleRate(sampleRate_);
+    }
+    
 }
 
 SynthesizerVoice* Synthesizer::findFreeVoice (SynthesizerSound* soundToPlay,

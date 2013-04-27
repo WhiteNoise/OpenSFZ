@@ -1,4 +1,4 @@
-//
+   //
 //  SFZAudioReader.cpp
 //  OpenSFZ
 //
@@ -24,6 +24,8 @@ SFZAudioReader::SFZAudioReader()
 bool SFZAudioReader::load(string fileName) {
 	myPath = fileName;
 
+    if(buffer)
+        delete buffer;
 	return read();
 }
 
@@ -134,7 +136,7 @@ bool SFZAudioReader::read()
 	}else {
         //		cout << "ERROR: Could not load sample: " <<myPath << endl; //This line seems to be hated by windows
         printf("ERROR: Could not load sample.");
-        
+        result = false;
 	}
 	
 	

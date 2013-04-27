@@ -83,7 +83,7 @@ public:
 
     int getNumVoices() const          
 	{ 
-		return voices.size(); 
+		return (int)voices.size();
 	}
 
 	void clearVoices();

@@ -16,6 +16,7 @@ public:
     SFZAudioBuffer(const int numChannels_, const int numSamples_);
     
     SFZAudioBuffer(const int numSamples_, float *channel1, float *channel2);
+    SFZAudioBuffer(const SFZAudioBuffer &other);
     ~SFZAudioBuffer();
     
     float *channels[2];

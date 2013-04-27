@@ -9,7 +9,10 @@ bool SFZSample::load()
     // FIXME: check for wav or ogg..?
     loader.load(fileName);
     buffer = loader.buffer;
-    
+    sampleRate = loader.mySampleRate;
+    sampleLength = loader.myDataSize;
+    loopStart = 0;
+    loopEnd = 0;
     //loopStart = loader.loopStart;
     //loopEnd = loader.loopEnd;
     
@@ -38,7 +41,7 @@ bool SFZSample::load()
 
 SFZSample::~SFZSample()
 {
-	delete buffer;
+
 }
 
 

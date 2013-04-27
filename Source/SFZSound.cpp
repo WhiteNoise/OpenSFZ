@@ -8,11 +8,21 @@ using namespace std;
 SFZSound::SFZSound(std::string sz)
 {
     file = Path(sz);
+    // Why not?
+    loadRegions();
+    double d;
+    loadSamples(&d);
+    dump();
 }
 
 SFZSound::SFZSound(const Path& fileIn)
 	: file(fileIn)
 {
+    // Why not?
+    loadRegions();
+    double d;
+    loadSamples(&d);
+    dump();
 }
 
 
@@ -71,7 +81,7 @@ SFZSample* SFZSound::addSample(string pathStr, string defaultPathStr)
 	if (sample == NULL) {
 		sample = new SFZSample(sampleFile.getFullPath());
 		samples[samplePath] = sample;
-		}
+    }
 	return sample;
 }
 
@@ -101,6 +111,7 @@ void SFZSound::loadSamples(	double* progressVar)
 		*progressVar = 0.0;
 
 	double numSamplesLoaded = 1.0, numSamples = samples.size();
+    
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
     {
 		SFZSample* sample = iter->second;
