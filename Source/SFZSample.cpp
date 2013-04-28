@@ -1,6 +1,6 @@
 #include "SFZSample.h"
 
-
+// get buffer directly from loader?
 
 bool SFZSample::load()
 {

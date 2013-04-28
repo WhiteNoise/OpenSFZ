@@ -88,7 +88,7 @@ private:
 	
 	TSamplerChunk samplerChunk;
 	TSampleLoop sampleLoop;
-
+	char* 	myData;
     int32_t parseSMPLChunk(std::ifstream &f, long dataLength);
 public:
     
@@ -101,7 +101,7 @@ public:
 	long getLength();
 	
 	
-	char* 	myData;
+
     SFZAudioBuffer *buffer;
 	
 	// get/set for the Path property
