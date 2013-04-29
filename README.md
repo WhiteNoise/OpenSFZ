@@ -8,15 +8,25 @@ Contributions to handle additional SFZ opcodes, more file formats, better resamp
 
 Documentation and examples are coming soon.
 
+Features
+========
+
+* SF2 / SFZ playback
+* WAV / Ogg support (via stb_vorbis currently)
+
+Planned:
+
+* Disk streaming (optional, but possibly with several different strategies)
+* More resampling options other than just Linear resampling
+* More sfz opcode support
+
 License
 =======
 
-This project is available under the MIT license. You may use it in commercial projects.
+This project is available under the MIT license. 
 
 Simple Example
 ==============
-
-
 
     #include "OpenSFZ.h"
     
