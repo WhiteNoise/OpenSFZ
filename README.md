@@ -58,6 +58,8 @@ Simple Example
         }
     
     // Audio processing. Call something like this in your audio processing callback loop: 
+        // Note: audio buffers should be filled with zeros first
+    
         SFZAudioBuffer buffer((int)numSamples,
                               audioOutLeftChannelPointer,
                               audioOutRightChannelPointer);
