@@ -110,7 +110,8 @@ void SFZSound::loadSamples(	double* progressVar)
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
     {
 		SFZSample* sample = iter->second;
-		bool ok = sample->load();
+		bool ok = sample->preload();
+        
 		if (!ok)
 			addError("Couldn't load sample \"" + sample->getShortName() + "\"");
 

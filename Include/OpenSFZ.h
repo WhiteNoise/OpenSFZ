@@ -9,10 +9,15 @@
 #ifndef OpenSFZ_OpenSFZ_h
 #define OpenSFZ_OpenSFZ_h
 
-#include "../Source/SFZAudioBuffer.h"
 #include "../Source/Path.h"
+
+#include "../Source/SFZAudioBuffer.h"
+#include "../Source/SFZAudioReader.h"
+#include "../Source/SFZAudioReaderManager.h"
+
 #include "../Source/SFZSound.h"
 #include "../Source/SFZVoice.h"
 #include "../Source/SFZSynth.h"
 #include "../Source/SF2Sound.h"
+
 #endif

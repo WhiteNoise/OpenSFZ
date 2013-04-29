@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A73D9162172D62B100E71ACA /* LockFreeFifo.h in Headers */ = {isa = PBXBuildFile; fileRef = A73D9160172D62B000E71ACA /* LockFreeFifo.h */; };
+		A73D9163172D62B100E71ACA /* NonCopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = A73D9161172D62B100E71ACA /* NonCopyable.h */; };
+		A73D91D2172D639800E71ACA /* SFZAudioReaderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73D91D0172D639700E71ACA /* SFZAudioReaderManager.cpp */; };
+		A73D91D3172D639800E71ACA /* SFZAudioReaderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A73D91D1172D639800E71ACA /* SFZAudioReaderManager.h */; };
 		A73FB588172A27C600C80C7F /* SFZCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73FB587172A27C600C80C7F /* SFZCommon.cpp */; };
 		A7CB309F17261D5C00F34741 /* RIFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB307117261D5C00F34741 /* RIFF.cpp */; };
 		A7CB30A017261D5C00F34741 /* RIFF.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB307217261D5C00F34741 /* RIFF.h */; };
@@ -62,6 +66,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A73D9160172D62B000E71ACA /* LockFreeFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockFreeFifo.h; sourceTree = "<group>"; };
+		A73D9161172D62B100E71ACA /* NonCopyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NonCopyable.h; sourceTree = "<group>"; };
+		A73D91D0172D639700E71ACA /* SFZAudioReaderManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SFZAudioReaderManager.cpp; sourceTree = "<group>"; };
+		A73D91D1172D639800E71ACA /* SFZAudioReaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFZAudioReaderManager.h; sourceTree = "<group>"; };
 		A73FB587172A27C600C80C7F /* SFZCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SFZCommon.cpp; sourceTree = "<group>"; };
 		A7CB306617261D2400F34741 /* libOpenSFZ.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOpenSFZ.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7CB307117261D5C00F34741 /* RIFF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RIFF.cpp; sourceTree = "<group>"; };
@@ -148,6 +156,8 @@
 		A7CB306D17261D5C00F34741 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A73D9160172D62B000E71ACA /* LockFreeFifo.h */,
+				A73D9161172D62B100E71ACA /* NonCopyable.h */,
 				A7CB313C1728AEBC00F34741 /* InputStream.cpp */,
 				A7CB313D1728AEBE00F34741 /* InputStream.h */,
 				A7CB31401728B24B00F34741 /* Path.cpp */,
@@ -189,6 +199,8 @@
 				A7CB30CE1726354A00F34741 /* Synthesizer.cpp */,
 				A7CB30CF1726354A00F34741 /* Synthesizer.h */,
 				A7CB309C17261D5C00F34741 /* WinTypes.h */,
+				A73D91D0172D639700E71ACA /* SFZAudioReaderManager.cpp */,
+				A73D91D1172D639800E71ACA /* SFZAudioReaderManager.h */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -251,6 +263,9 @@
 				A7CB313F1728AEC000F34741 /* InputStream.h in Headers */,
 				A7CB31431728B24F00F34741 /* Path.h in Headers */,
 				A7F17203172A0A6D00F17088 /* OpenSFZ.h in Headers */,
+				A73D9162172D62B100E71ACA /* LockFreeFifo.h in Headers */,
+				A73D9163172D62B100E71ACA /* NonCopyable.h in Headers */,
+				A73D91D3172D639800E71ACA /* SFZAudioReaderManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +339,7 @@
 				A7CB313E1728AEC000F34741 /* InputStream.cpp in Sources */,
 				A7CB31421728B24F00F34741 /* Path.cpp in Sources */,
 				A73FB588172A27C600C80C7F /* SFZCommon.cpp in Sources */,
+				A73D91D2172D639800E71ACA /* SFZAudioReaderManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +424,7 @@
 				CLANG_CXX_LIBRARY = "libstdc++";
 				EXECUTABLE_PREFIX = lib;
 				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

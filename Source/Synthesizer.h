@@ -10,6 +10,8 @@
 #define __OpenSFZ__Synthesizer__
 
 #include "SFZCommon.h"
+
+class SFZAudioBuffer;
 class SynthesizerSound;
 
 class SynthesizerVoice {

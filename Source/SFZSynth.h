@@ -5,7 +5,7 @@
 
 class SFZSynth : public Synthesizer {
 	public:
-		SFZSynth(int numVoices = 16);
+		SFZSynth(int numVoices = 32);
 
 		void	noteOn(
 			const int midiChannel, const int midiNoteNumber, const float velocity);

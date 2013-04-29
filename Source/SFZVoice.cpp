@@ -67,6 +67,11 @@ void SFZVoice::startNote(
 		killNote();
 		return;
 		}
+    
+    if(!region->sample->getFullyLoaded())
+    {
+        region->sample->load();
+    }
 
 	// Pitch.
 	curMidiNote = midiNoteNumber;
@@ -193,7 +198,7 @@ void SFZVoice::renderNextBlock(
 	bool ampSegmentIsExponential = ampeg.segmentIsExponential;
 	float loopStart = this->loopStart;
 	float loopEnd = this->loopEnd;
-	float sampleEnd = this->sampleEnd;
+	float sampleEnd = buffer->getNumSamples(); //this->sampleEnd
 
 	while (--numSamples >= 0) {
 		int pos = (int) sourceSamplePosition;

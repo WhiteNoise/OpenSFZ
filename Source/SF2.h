@@ -4,7 +4,7 @@
 
 #include "WinTypes.h"
 #include "SFZCommon.h"
-#include "InputStream.h"
+
 
 #define SF2Field(type, name) 	\
 	type	name;

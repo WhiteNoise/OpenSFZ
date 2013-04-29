@@ -1,42 +1,46 @@
 #include "SFZSample.h"
 
-// get buffer directly from loader?
+#include <assert.h>
+
+bool SFZSample::preload()
+{
+    SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+    
+    loader = new SFZAudioReader();
+    loader->setFile(fileName, 10000);
+    
+    manager->addReader(loader);
+    fullyLoaded = false;
+    
+	return true;
+}
 
 bool SFZSample::load()
 {
-    // A bunch of things needed here..
-    
-    // FIXME: check for wav or ogg..?
-    loader.load(fileName);
-    buffer = loader.buffer;
-    sampleRate = loader.mySampleRate;
-    sampleLength = loader.getLength();
-    loopStart = loader.loopStart;
-    loopEnd = loader.loopEnd;
-    
+    // Check for case where we preloaded the whole file? 
 
-    
-    //loopStart = loader.loopStart;
-    //loopEnd = loader.loopEnd;
-    
-    /*
-	AudioFormatReader* reader = formatManager->createReaderFor(file);
-	if (reader == NULL)
-		return false;
-	sampleRate = reader->sampleRate;
-	sampleLength = reader->lengthInSamples;
-	// Read some extra samples, which will be filled with zeros, so interpolation
-	// can be done without having to check for the edge all the time.
-	buffer = new SFZAudioBuffer(reader->numChannels, sampleLength + 4);
-	reader->read(buffer, 0, sampleLength + 4, 0, true, true);
-	StringPairArray* metadata = &reader->metadataValues;
-	int numLoops = metadata->getValue("NumSampleLoops", "0").getIntValue();
-	if (numLoops > 0) {
-		loopStart = metadata->getValue("Loop0Start", "0").getLargeIntValue();
-		loopEnd = metadata->getValue("Loop0End", "0").getLargeIntValue();
-		}
-	delete reader;
-     */
+    if(loader)
+    {
+        SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+        
+        SFZAudioReader *newloader = loader->createReaderForFull();
+        manager->releaseReader(loader);
+        loader = newloader;
+        manager->addReader(loader);
+        
+    } else {
+        SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+        loader = new SFZAudioReader();
+        loader->setFile(fileName, 0);
+        
+        
+        manager->addReader(loader);
+    }
+    fullyLoaded = true;
+    sampleRate = loader->mySampleRate;
+    sampleLength = loader->getLength();
+    loopStart = loader->loopStart;
+    loopEnd = loader->loopEnd;
     
 	return true;
 }
@@ -44,7 +48,7 @@ bool SFZSample::load()
 
 SFZSample::~SFZSample()
 {
-
+    // audio manager 
 }
 
 
@@ -57,43 +61,59 @@ std::string SFZSample::getShortName()
 }
 
 
+SFZAudioBuffer*	SFZSample::getBuffer()
+{
+
+    if(loader)
+    {
+        sampleLength = loader->buffer->getNumSamples();
+        return loader->buffer;
+    }
+    else if(internalBuffer)
+    {
+            sampleLength = internalBuffer->getNumSamples();
+        return internalBuffer;
+    }
+        return NULL;
+}
+
+
+
+void SFZSample::dump()
+{
+	printf("%s\n %s\n", fileName.c_str(), loader->getSummary());
+}
+
 void SFZSample::setBuffer(SFZAudioBuffer* newBuffer)
 {
-    if(buffer)
-        delete buffer;
+    if(internalBuffer)
+        delete internalBuffer;
     
-	buffer = newBuffer;
-	sampleLength = buffer->getNumSamples();
+	internalBuffer = newBuffer;
+	sampleLength = internalBuffer->getNumSamples();
 }
 
 
 SFZAudioBuffer* SFZSample::detachBuffer()
 {
-	SFZAudioBuffer* result = buffer;
-	buffer = NULL;
-	return result;
+    SFZAudioBuffer* result = internalBuffer;
+    internalBuffer = NULL;
+    return result;
 }
 
-
-void SFZSample::dump()
-{
-
-
-	printf("%s\n %s\n", fileName.c_str(), loader.getSummary());
-}
 
 
 #ifdef DEBUG
 void SFZSample::checkIfZeroed(const char* where)
 {
-	if (buffer == NULL) {
+	if (loader->buffer == NULL) {
 		printf("SFZSample::checkIfZeroed(%s): no buffer!", where);
 		return;
 		}
 
-	int samplesLeft = buffer->getNumSamples();
+	int samplesLeft = loader->buffer->getNumSamples();
 	unsigned long nonzero = 0, zero = 0;
-	float* p = buffer->channels[0];
+	float* p = loader->buffer->channels[0];
 	for (; samplesLeft > 0; --samplesLeft) {
 		if (*p++ == 0.0)
 			zero += 1;
