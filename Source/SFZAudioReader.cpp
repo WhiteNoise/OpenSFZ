@@ -80,6 +80,9 @@ bool SFZAudioReader::readOgg() {
             }
         }
     }
+    
+    delete temp;
+    
 	return result; // this should probably be something more descriptive
 #endif
     return 0;
