@@ -29,6 +29,9 @@ This project is available under the MIT license.
 Simple Example
 ==============
 
+*Note: To turn off disk streaming and load samples right away, uncoment #define SFZ_NO_STREAMING 1 in SFZCommon.h
+Otherwise, see below.
+    
     #include "OpenSFZ.h"
     
     ....
@@ -53,6 +56,7 @@ Simple Example
     
         if(e->eventType == Event::EVENT_NOTEON)
         {
+            // Note: Velocity is 0...1.0 not 0...127
             synth->noteOn(1, e->iData[0], e->rData[0]);
         } else if(e->eventType == Event::EVENT_NOTEOFF)
         {
@@ -78,3 +82,25 @@ Simple Example
         synth->renderNextBlock(buffer, 0, (int)numSamples);
         
     // that's it
+    
+Using Disk Streaming
+====================
+
+In SFZCommon.h, comment out #define SFZ_NO_STREAMING 1 if it's not already.
+    
+To make it work just get an instance of the SFZAudioReaderManager
+
+    manager = SFZAudioReaderManager::getInstance();
+    
+and in another thread call manager->process() in a loop, such as:
+    
+    while(!shouldQuit)
+    {
+        manager->process(); // this reads in new data from sample files 
+        
+        MsSleep(50);
+    }
+    
+You should get the manager instance before starting up your audio engine and creating any SFZSynth's.
+
+
