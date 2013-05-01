@@ -7,6 +7,19 @@ static const float fastReleaseTime = 0.01;
 SFZEG::SFZEG()
 	: exponentialDecay(false)
 {
+    segment = Delay;
+    parameters.attack = 0.0f;
+    parameters.decay = 0.0f;
+    parameters.delay = 0.0f;
+    parameters.sustain = 0.0f;
+    parameters.release = 0.0f;
+    parameters.hold = 0.0f;
+    parameters.start = 0.0f;
+    sampleRate = 44100.0f;
+    level = 0.0f;
+    slope = 0.0f;
+    samplesUntilNextSegment = 0;
+    segmentIsExponential = false;
 }
 
 

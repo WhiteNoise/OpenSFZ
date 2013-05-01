@@ -23,6 +23,7 @@
 
 #include <assert.h>
 
+#include "stb_vorbis.h"
 
 #ifdef __APPLE__
 typedef volatile int32_t atomic_t;

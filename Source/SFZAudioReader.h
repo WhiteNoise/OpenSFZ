@@ -18,6 +18,9 @@
 
 
 class SFZAudioBuffer;
+
+// I really should restructure this to seperate out the ogg / wav loading.. this is a mess.
+
 class SFZAudioReader  {
 	
 
@@ -174,7 +177,10 @@ private:
     
     std::ifstream currentFile;
     
+    // ogg stuff..
     
+    stb_vorbis_alloc vorbisAlloc;
+    stb_vorbis *vorbisData;
 };
 
 

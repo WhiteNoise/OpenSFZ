@@ -28,6 +28,9 @@ SFZAudioReader::SFZAudioReader()
     loopStart = 0;
     loopEnd = 0;
     currentReadOffset = 0;
+    
+    vorbisAlloc.alloc_buffer = 0;
+    vorbisAlloc.alloc_buffer_length_in_bytes = 0;
 };
 
 SFZAudioReader *SFZAudioReader::createReaderForFull()
@@ -385,8 +388,41 @@ bool SFZAudioReader::beginLoad()
         } else {
             return false;
         }
-    } else {
-        // fixme: do ogg.
+    } else if(extension == "ogg")
+    {
+        if(vorbisAlloc.alloc_buffer)
+            delete vorbisAlloc.alloc_buffer;
+        
+        vorbisAlloc.alloc_buffer = 0;
+        int error = 0;
+        
+        vorbisData = stb_vorbis_open_filename((char *)myPath.c_str(), &error, &vorbisAlloc);
+        stb_vorbis_info vorbInfo = stb_vorbis_get_info(vorbisData);
+        length = stb_vorbis_stream_length_in_samples(vorbisData);
+
+        mySampleRate = vorbInfo.sample_rate;
+        myChannels = vorbInfo.channels;
+
+
+        // FIXME: DRY violation
+        if(maxLength == 0)
+            maxLength = length;
+        
+        if(maxLength > length)
+            maxLength = length;
+        
+        if(!buffer)
+        {
+            buffer = new SFZAudioBuffer(myChannels, maxLength);
+            buffer->setNumSamples(0);
+            buffer->clear();
+        }
+        currentReadOffset = 0;
+        headerIsRead = true;
+
+        stream();
+        stream();
+        stream();
     }
     
     return false;
@@ -405,6 +441,47 @@ bool SFZAudioReader::stream()
         
         
         return true;
+    } else if(extension == "ogg")
+    {
+
+        assert(vorbisData);
+        int numFrames = 4;
+        
+        
+        for(int i=0; i<numFrames; i++)
+        {
+            float **sampleFrames;
+            
+
+            unsigned int samplesDecoded = stb_vorbis_get_frame_float(vorbisData, NULL, &sampleFrames);
+            
+            if(samplesDecoded)
+            {
+                unsigned int samplesToCopy = samplesDecoded;
+                if(samplesToCopy > maxLength - currentReadOffset)
+                    samplesToCopy = maxLength - currentReadOffset;
+                
+                if(samplesToCopy > 0)
+                {
+                
+
+                    
+                    for(int i=0; i<myChannels; i++)
+                    {
+                        for(int j=0; j<samplesToCopy; j++)
+                        {
+                            buffer->channels[i][j + currentReadOffset] = sampleFrames[i][j];
+                        }
+                    }
+                    
+                    currentReadOffset += samplesToCopy;
+                    
+                    // keep what's already in there..
+                    if(buffer->getNumSamples() < currentReadOffset)
+                        buffer->setNumSamples(currentReadOffset);
+                }
+            }
+        }
     }
     
     return false;
@@ -418,5 +495,15 @@ void SFZAudioReader::closeStream()
     {
         if(currentFile.is_open())
             currentFile.close();
+    } else if(extension == "ogg")
+    {
+
+        if(vorbisData)
+        {
+            stb_vorbis_close(vorbisData);
+            
+            vorbisData = 0;
+            
+        }
     }
 }

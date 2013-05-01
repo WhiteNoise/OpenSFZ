@@ -9,6 +9,8 @@
 #ifndef OpenSFZ_OpenSFZ_h
 #define OpenSFZ_OpenSFZ_h
 
+#include "../Source/stb_vorbis.h"
+
 #include "../Source/Path.h"
 
 #include "../Source/SFZAudioBuffer.h"

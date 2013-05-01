@@ -57,20 +57,32 @@ void SFZVoice::startNote(
 
 	int velocity = (int) (floatVelocity * 127.0);
 	curVelocity = velocity;
+    
 	if (region == NULL)
 		region = sound->getRegionFor(midiNoteNumber, velocity);
-	if (region == NULL || region->sample == NULL || region->sample->getBuffer() == NULL) {
+    
+	if (region == NULL || region->sample == NULL)
+    {
 		killNote();
 		return;
-		}
-	if (region->negative_end) {
+    }
+    
+	if (region->negative_end)
+    {
 		killNote();
 		return;
-		}
+    }
+
     
     if(!region->sample->getFullyLoaded())
     {
         region->sample->load();
+    }
+    
+    if(!region->sample->getBuffer())
+    {
+        killNote();
+        return;
     }
 
 	// Pitch.
