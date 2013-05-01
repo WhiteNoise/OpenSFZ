@@ -21,6 +21,8 @@ public:
     void setCurrentPlaybackSampleRate (double newRate);
     void clearCurrentNote();
     int getCurrentlyPlayingNote() { return currentlyPlayingNote; };
+    SynthesizerSound *getCurrentlyPlayingSound() const            { return currentlyPlayingSound; };
+
     
     virtual void startNote (const int midiNoteNumber,
                             const float velocity,

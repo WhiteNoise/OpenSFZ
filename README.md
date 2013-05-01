@@ -6,17 +6,28 @@ An Open SFZ player & SF2 (Sampler) based on SFZero, without the Juce dependency
 Note, this is still in development and only has minimal functionality right now. 
 Contributions to handle additional SFZ opcodes, more file formats, better resampling etc, are welcome.
 
-Documentation and examples are coming soon.
+Documentation and examples are coming soon. 
+
+Features
+========
+
+* SF2 / SFZ playback
+* WAV / Ogg support (via stb_vorbis currently)
+
+Planned:
+
+* Disk streaming (optional, but possibly with several different strategies)
+* More resampling options other than just Linear resampling
+* More sfz opcode support
+* Project files for Visual Studio (an XCode lib project exists currently)
 
 License
 =======
 
-This project is available under the MIT license. You may use it in commercial projects.
+This project is available under the MIT license. 
 
 Simple Example
 ==============
-
-
 
     #include "OpenSFZ.h"
     
@@ -58,6 +69,8 @@ Simple Example
         }
     
     // Audio processing. Call something like this in your audio processing callback loop: 
+        // Note: audio buffers should be filled with zeros first
+    
         SFZAudioBuffer buffer((int)numSamples,
                               audioOutLeftChannelPointer,
                               audioOutRightChannelPointer);

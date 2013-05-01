@@ -136,6 +136,24 @@ void Synthesizer::noteOff (int midiChannel,
                         bool allowTailOff)
 {
 	// not worth it since we override this
+    
+    for (int i = voices.size()-1; i >= 0; i-- )
+    {
+        SynthesizerVoice* const voice = voices[i];
+        
+        if (voice->getCurrentlyPlayingNote() == midiNoteNumber)
+        {
+            SynthesizerSound* const sound = voice->getCurrentlyPlayingSound();
+            
+            if (sound != NULL)
+            {
+                voice->keyIsDown = false;
+                
+            //    if (! (sustainPedalsDown [midiChannel] || voice->sostenutoPedalDown))
+                    stopVoice (voice, allowTailOff);
+            }
+        }
+    }
 }
     
 void Synthesizer::allNotesOff (int midiChannel,
