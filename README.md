@@ -53,6 +53,7 @@ Simple Example
     
         if(e->eventType == Event::EVENT_NOTEON)
         {
+            // Note: Velocity should be in the 0...1 range, not the usual 1-127 midi range.
             synth->noteOn(1, e->iData[0], e->rData[0]);
         } else if(e->eventType == Event::EVENT_NOTEOFF)
         {
