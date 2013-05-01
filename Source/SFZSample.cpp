@@ -18,7 +18,21 @@ bool SFZSample::preload()
 bool SFZSample::load()
 {
     // Check for case where we preloaded the whole file? 
+#ifdef SFZ_NO_STREAMING
+    loader = new SFZAudioReader();
+    loader->setFile(fileName, 0);
 
+    if(loader->beginLoad())
+    {
+    
+        while(loader->isStreamFinished())
+        {
+            loader->stream();
+        }
+        loader->closeStream();
+    }
+    
+#else
     if(loader)
     {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
@@ -36,6 +50,8 @@ bool SFZSample::load()
         
         manager->addReader(loader);
     }
+#endif
+    
     fullyLoaded = true;
     sampleRate = loader->mySampleRate;
     sampleLength = loader->getLength();

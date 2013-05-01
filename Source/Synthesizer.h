@@ -110,7 +110,7 @@ public:
     void removeSound (int index);
 
     
-    
+    // Velocity should be in the 0...1 range
     virtual void noteOn (int midiChannel,
                          int midiNoteNumber,
                          float velocity);

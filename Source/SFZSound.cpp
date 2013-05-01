@@ -110,8 +110,11 @@ void SFZSound::loadSamples(	double* progressVar)
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
     {
 		SFZSample* sample = iter->second;
+#ifdef SFZ_NO_STREAMING
+		bool ok = sample->load();
+#else
 		bool ok = sample->preload();
-        
+#endif
 		if (!ok)
 			addError("Couldn't load sample \"" + sample->getShortName() + "\"");
 

@@ -52,7 +52,7 @@ extern float decibelsToGain(float db);
 extern float getMidiNoteInHertz(int noteNumber);
 
 
-
+//#define SFZ_NO_STREAMING 1
 
 
 #endif

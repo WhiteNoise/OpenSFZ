@@ -10,6 +10,8 @@
 
 #include "SFZCommon.h"
 
+#ifndef SFZ_NO_STREAMING
+
 class SFZAudioReader;
 class SFZAudioBuffer;
 
@@ -40,3 +42,4 @@ private:
     
     static SFZAudioReaderManager *instance;
 };
+#endif

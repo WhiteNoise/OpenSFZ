@@ -397,32 +397,41 @@ bool SFZAudioReader::beginLoad()
         int error = 0;
         
         vorbisData = stb_vorbis_open_filename((char *)myPath.c_str(), &error, &vorbisAlloc);
-        stb_vorbis_info vorbInfo = stb_vorbis_get_info(vorbisData);
-        length = stb_vorbis_stream_length_in_samples(vorbisData);
-
-        mySampleRate = vorbInfo.sample_rate;
-        myChannels = vorbInfo.channels;
-
-
-        // FIXME: DRY violation
-        if(maxLength == 0)
-            maxLength = length;
         
-        if(maxLength > length)
-            maxLength = length;
-        
-        if(!buffer)
+        if(vorbisData)
         {
-            buffer = new SFZAudioBuffer(myChannels, maxLength);
-            buffer->setNumSamples(0);
-            buffer->clear();
-        }
-        currentReadOffset = 0;
-        headerIsRead = true;
+            stb_vorbis_info vorbInfo = stb_vorbis_get_info(vorbisData);
+            length = stb_vorbis_stream_length_in_samples(vorbisData);
 
-        stream();
-        stream();
-        stream();
+            mySampleRate = vorbInfo.sample_rate;
+            myChannels = vorbInfo.channels;
+
+
+            // FIXME: DRY violation
+            if(maxLength == 0)
+                maxLength = length;
+            
+            if(maxLength > length)
+                maxLength = length;
+            
+            if(!buffer)
+            {
+                buffer = new SFZAudioBuffer(myChannels, maxLength);
+                buffer->setNumSamples(0);
+                buffer->clear();
+            }
+            currentReadOffset = 0;
+            headerIsRead = true;
+
+            stream();
+            stream();
+            stream();
+            return true;
+        } else {
+            return false;
+        }
+        
+
     }
     
     return false;
@@ -443,42 +452,45 @@ bool SFZAudioReader::stream()
         return true;
     } else if(extension == "ogg")
     {
-
         assert(vorbisData);
-        int numFrames = 4;
-        
-        
-        for(int i=0; i<numFrames; i++)
+
+        if(vorbisData)
         {
-            float **sampleFrames;
+            int numFrames = 4;
             
-
-            unsigned int samplesDecoded = stb_vorbis_get_frame_float(vorbisData, NULL, &sampleFrames);
             
-            if(samplesDecoded)
+            for(int i=0; i<numFrames; i++)
             {
-                unsigned int samplesToCopy = samplesDecoded;
-                if(samplesToCopy > maxLength - currentReadOffset)
-                    samplesToCopy = maxLength - currentReadOffset;
-                
-                if(samplesToCopy > 0)
-                {
+                float **sampleFrames;
                 
 
+                unsigned int samplesDecoded = stb_vorbis_get_frame_float(vorbisData, NULL, &sampleFrames);
+                
+                if(samplesDecoded)
+                {
+                    unsigned int samplesToCopy = samplesDecoded;
+                    if(samplesToCopy > maxLength - currentReadOffset)
+                        samplesToCopy = maxLength - currentReadOffset;
                     
-                    for(int i=0; i<myChannels; i++)
+                    if(samplesToCopy > 0)
                     {
-                        for(int j=0; j<samplesToCopy; j++)
+                    
+
+                        
+                        for(int i=0; i<myChannels; i++)
                         {
-                            buffer->channels[i][j + currentReadOffset] = sampleFrames[i][j];
+                            for(int j=0; j<samplesToCopy; j++)
+                            {
+                                buffer->channels[i][j + currentReadOffset] = sampleFrames[i][j];
+                            }
                         }
+                        
+                        currentReadOffset += samplesToCopy;
+                        
+                        // keep what's already in there..
+                        if(buffer->getNumSamples() < currentReadOffset)
+                            buffer->setNumSamples(currentReadOffset);
                     }
-                    
-                    currentReadOffset += samplesToCopy;
-                    
-                    // keep what's already in there..
-                    if(buffer->getNumSamples() < currentReadOffset)
-                        buffer->setNumSamples(currentReadOffset);
                 }
             }
         }
