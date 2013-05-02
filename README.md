@@ -1,7 +1,7 @@
 OpenSFZ
 =======
 
-An Open SFZ player & SF2 (Sampler) based on SFZero, without the Juce dependency
+An Open SFZ player & SF2 (Sampler) based on SFZero (_https://github.com/stevefolta/SFZero_), without the Juce dependency. SFZero was written by Steve Folta. 
 
 Note, this is still in development and only has minimal functionality right now. 
 Contributions to handle additional SFZ opcodes, more file formats, better resampling etc, are welcome.
