@@ -33,6 +33,7 @@ public:
     ~SFZAudioBuffer();
     
     float *channels[2];
+    float *channelPtr[2];
     
     unsigned int getNumSamples() { return numSamples; };
     int getNumChannels() { return numChannels; };

@@ -34,10 +34,12 @@ SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned int numSam
     
     for(int i=0; i<numChannels; i++)
     {
-        channels[i] = new float[numSamples + 5];
+        channelPtr[i] = channels[i] = new float[numSamples + 32];
         
-        for(unsigned int j=0; j< numSamples + 5; j++)
+        for(unsigned int j=0; j< numSamples + 32; j++)
             channels[i][j] = 0.0f;
+        
+        channels[i] += 16;
     }
     owned = true;
 }
@@ -51,7 +53,7 @@ SFZAudioBuffer::SFZAudioBuffer(const SFZAudioBuffer &other)
     
     for(int i=0; i<numChannels; i++)
     {
-        channels[i] = other.channels[i];
+        channelPtr[i] = channels[i] = other.channels[i];
     }
     
     bufferSize = numSamples;
@@ -64,7 +66,8 @@ SFZAudioBuffer::~SFZAudioBuffer()
     {
         for(int i=0; i<numChannels; i++)
         {
-            delete channels[i];
+            delete channelPtr[i];
+            channelPtr[i] = 0;
             channels[i] = 0;
         }
     }

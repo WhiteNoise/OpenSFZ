@@ -27,7 +27,7 @@ SFZVoice::SFZVoice()
     // Info only.
     numLoops = 0;
     curVelocity = 0;
-    
+    interpolationMode = 0;
 	ampeg.setExponentialDecay(true);
 }
 
@@ -185,6 +185,11 @@ void SFZVoice::controllerMoved(
 	/***/
 }
 
+void SFZVoice::setInterpolationMode(int i)
+{
+    interpolationMode = i;
+}
+
 
 void SFZVoice::renderNextBlock(
 	SFZAudioBuffer& outputBuffer, int startSample, int numSamples)
@@ -210,22 +215,94 @@ void SFZVoice::renderNextBlock(
 	bool ampSegmentIsExponential = ampeg.segmentIsExponential;
 	float loopStart = this->loopStart;
 	float loopEnd = this->loopEnd;
-	float sampleEnd = buffer->getNumSamples(); //this->sampleEnd
 
-	while (--numSamples >= 0) {
+	float sampleEnd = buffer->getNumSamples(); //this->sampleEnd
+    int iSampleEnd = buffer->getNumSamples();
+	while (--numSamples >= 0)
+    {
 		int pos = (int) sourceSamplePosition;
         
         assert(pos >= 0 && pos < buffer->getNumSamples());
         
-		float alpha = (float) (sourceSamplePosition - pos);
-		float invAlpha = 1.0f - alpha;
-		int nextPos = pos + 1;
-		if (loopStart < loopEnd && nextPos > loopEnd)
-			nextPos = loopStart;
 
 		// Simple linear interpolation.
-		float l = (inL[pos] * invAlpha + inL[nextPos] * alpha);
-		float r = inR ? (inR[pos] * invAlpha + inR[nextPos] * alpha) : l;
+		float l = 0.0;
+		float r = 0.0;
+        
+
+        if(interpolationMode == 0)
+        {
+            float alpha = (float) (sourceSamplePosition - pos);
+            float invAlpha = 1.0f - alpha;
+            int nextPos = pos + 1;
+            if (loopStart < loopEnd && nextPos > loopEnd)
+                nextPos = loopStart;
+
+            
+            l = (inL[pos] * invAlpha + inL[nextPos] * alpha);
+            r = inR ? (inR[pos] * invAlpha + inR[nextPos] * alpha) : l;
+        } else if(interpolationMode == 1)
+        {
+            float x = sourceSamplePosition - (float)pos;
+
+            int y_2 = pos-2;
+            int y_1 = pos-1;
+            int y0 = pos;
+            int y1 = pos+1;
+            int y2 = pos+2;
+            int y3 = pos+3;
+            
+            // I could automatically add extra space on the end and beginning.
+
+            
+            /*
+            // Linear
+            return y[0] + x*(y[1]-y[0]);
+            */
+
+
+            // Optimal 8x (6-point, 4th-order) (z-form)
+            float z = x - 1/2.0;
+            float even1 = inL[y1]+inL[y0], odd1 = inL[y1]-inL[y0];
+            float even2 = inL[y2]+inL[y_1], odd2 = inL[y2]-inL[y_1];
+            float even3 = inL[y3]+inL[y_2], odd3 = inL[y3]-inL[y_2];
+            
+            float c0 = even1*0.07571827673995030 + even2*0.39809419102537769
+            + even3*0.02618753167558019;
+            float c1 = odd1*-0.87079480370960549 + odd2*0.41706012247048818
+            + odd3*0.12392296259397995;
+            float c2 = even1*0.186883718356452901 + even2*-0.40535151498252686
+            + even3*0.21846781431808182;
+            float c3 = odd1*1.09174419992174300 + odd2*-0.62917625718809478
+            + odd3*0.15915674384870970;
+            float c4 = even1*0.03401038103941584 + even2*-0.05090907029392906
+            + even3*0.01689861603514873;
+            l = (((c4*z+c3)*z+c2)*z+c1)*z+c0;
+            
+            if(inR)
+            {
+                even1 = inR[y1]+inR[y0], odd1 = inR[y1]-inR[y0];
+                even2 = inR[y2]+inR[y_1], odd2 = inR[y2]-inR[y_1];
+                even3 = inR[y3]+inR[y_2], odd3 = inR[y3]-inR[y_2];
+                
+                c0 = even1*0.07571827673995030 + even2*0.39809419102537769
+                + even3*0.02618753167558019;
+                c1 = odd1*-0.87079480370960549 + odd2*0.41706012247048818
+                + odd3*0.12392296259397995;
+                c2 = even1*0.186883718356452901 + even2*-0.40535151498252686
+                + even3*0.21846781431808182;
+                c3 = odd1*1.09174419992174300 + odd2*-0.62917625718809478
+                + odd3*0.15915674384870970;
+                c4 = even1*0.03401038103941584 + even2*-0.05090907029392906
+                + even3*0.01689861603514873;
+                r = (((c4*z+c3)*z+c2)*z+c1)*z+c0;
+                
+                
+            } else {
+                r = l;
+            }
+        
+        }
 
 		float gainLeft = noteGainLeft * ampegGain;
 		float gainRight = noteGainRight * ampegGain;
@@ -265,7 +342,7 @@ void SFZVoice::renderNextBlock(
 			killNote();
 			break;
 			}
-		}
+    }
 
 	this->sourceSamplePosition = sourceSamplePosition;
 	ampeg.level = ampegGain;

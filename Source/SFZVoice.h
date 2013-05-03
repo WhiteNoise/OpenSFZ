@@ -39,8 +39,9 @@ class SFZVoice : public SynthesizerVoice {
 		void	setRegion(SFZRegion* nextRegion);
 
 		std::string	infoString();
-
+        void setInterpolationMode(int i);
 	protected:
+        int interpolationMode;
 		int       	trigger;
 		SFZRegion*	region;
 		int       	curMidiNote, curPitchWheel;
