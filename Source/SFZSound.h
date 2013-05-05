@@ -39,6 +39,8 @@ class SFZSound : public SynthesizerSound {
 		virtual void	useSubsound(int whichSubsound);
 		virtual int 	selectedSubsound();
 
+    void checkMemoryUsage();
+    
 		void	dump();
 
 	protected:

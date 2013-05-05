@@ -31,6 +31,10 @@ void SFZSynth::noteOn(
 	// First, stop any currently-playing sounds in the group.
 	//*** Currently, this only pays attention to the first matching region.
 	int group = 0;
+    
+    if(getNumSounds() == 0)
+        return;
+    
 	SFZSound* sound = dynamic_cast<SFZSound*>(sounds[0]);
 	if (sound) {
 		SFZRegion* region = sound->getRegionFor(midiNoteNumber, midiVelocity);
@@ -96,6 +100,9 @@ void SFZSynth::noteOff(
 
 
 	Synthesizer::noteOff(midiChannel, midiNoteNumber, allowTailOff);
+    
+    if(getNumSounds() == 0)
+        return;
 
 	// Start release region.
 	SFZSound* sound = dynamic_cast<SFZSound*>(getSound(0));

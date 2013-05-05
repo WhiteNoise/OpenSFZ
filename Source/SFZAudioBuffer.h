@@ -36,6 +36,7 @@ public:
     float *channelPtr[2];
     
     unsigned int getNumSamples() { return numSamples; };
+    unsigned int getBufferSize() { return bufferSize; };
     int getNumChannels() { return numChannels; };
     
     void setOwned(bool b) { owned = b; };

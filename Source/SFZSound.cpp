@@ -106,14 +106,27 @@ void SFZSound::loadSamples(	double* progressVar)
 		*progressVar = 0.0;
 
 	double numSamplesLoaded = 1.0, numSamples = samples.size();
+    int preloadSize = 128;
+    
+#ifdef SFZ_LOWMEMORY
+    if(numSamples > 100)
+        return;
+    else if(numSamples > 50)
+        preloadSize = 1024;
+    else
+        preloadSize = 2048;
+#else
+    preloadSize = 4096;
+#endif
     
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
     {
 		SFZSample* sample = iter->second;
+        bool ok = false;
 #ifdef SFZ_NO_STREAMING
-		bool ok = sample->load();
+        ok = sample->load();
 #else
-		bool ok = sample->preload();
+        ok = sample->preload(preloadSize);
 #endif
 		if (!ok)
 			addError("Couldn't load sample \"" + sample->getShortName() + "\"");
@@ -142,6 +155,41 @@ SFZRegion* SFZSound::getRegionFor(
 		}
 
 	return NULL;
+}
+
+void SFZSound::checkMemoryUsage()
+{
+    atomic_t memoryUsage = SFZAudioReaderManager::getInstance()->getMemoryUsage();
+    unsigned int memoryLeft = getFreeMemory();
+    
+    printf("Memory left %u, usage: %u\n", memoryLeft, memoryUsage);
+    
+    //memoryLeft < 30000000
+    while(memoryUsage > 30000000)
+    {
+        unsigned int oldest = INT_MAX;
+        SFZSample *oldestSample = NULL;
+        
+        for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
+        {
+            SFZSample* sample = iter->second;
+            
+            if(sample->getSampleOrder() < oldest)
+            {
+                oldestSample = sample;
+                oldest = sample->getSampleOrder();
+            }
+        }
+        
+        if(oldestSample) {
+            if(oldestSample->getBuffer())
+                memoryUsage -= oldestSample->getBuffer()->getBufferSize() * 4 * oldestSample->getBuffer()->getNumChannels();
+            
+            oldestSample->unload();
+        }
+
+
+    }
 }
 
 

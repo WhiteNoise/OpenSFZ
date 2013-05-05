@@ -27,6 +27,21 @@
 
 #ifdef __APPLE__
 typedef volatile int32_t atomic_t;
+
+#include "TargetConditionals.h"
+
+#if TARGET_OS_IPHONE
+#define SFZ_LOWMEMORY 1
+
+#elif TARGET_IPHONE_SIMULATOR
+#define SFZ_LOWMEMORY 1
+
+#elif TARGET_OS_MAC
+// Other kinds of Mac OS
+#else
+// Unsupported platform
+#endif
+
 #endif
 
 #ifdef _WIN32_
@@ -50,7 +65,9 @@ typedef long int64;
 
 extern float decibelsToGain(float db);
 extern float getMidiNoteInHertz(int noteNumber);
-
+extern void print_free_memory ();
+unsigned int getFreeMemory();
+extern void sfzDebugPrint(const char *sz);
 
 //#define SFZ_NO_STREAMING 1
 

@@ -30,7 +30,10 @@ public:
     // process any readers.. 
     void process();
     
+    // attempt to estimate how much memory we're using
+    atomic_t getMemoryUsage() { return memoryUsage; };
 private:
+    atomic_t memoryUsage;
     SFZAudioReaderManager();
     ~SFZAudioReaderManager();
     

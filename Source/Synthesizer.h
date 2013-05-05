@@ -107,7 +107,7 @@ public:
     void addSound (SynthesizerSound *newSound);
     
     /** Removes and deletes one of the sounds. */
-    void removeSound (int index);
+    void deleteSound (int index);
 
     
     // Velocity should be in the 0...1 range

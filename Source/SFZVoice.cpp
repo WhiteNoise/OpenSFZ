@@ -77,6 +77,11 @@ void SFZVoice::startNote(
     if(!region->sample->getFullyLoaded())
     {
         region->sample->load();
+        
+        sound->checkMemoryUsage();
+
+    } else {
+        region->sample->bumpSampleOrder();
     }
     
     if(!region->sample->getBuffer())
@@ -194,10 +199,14 @@ void SFZVoice::setInterpolationMode(int i)
 void SFZVoice::renderNextBlock(
 	SFZAudioBuffer& outputBuffer, int startSample, int numSamples)
 {
-	if (region == NULL)
+	if (region == NULL || region->sample == NULL)
 		return;
 
 	SFZAudioBuffer* buffer = region->sample->getBuffer();
+    
+    if(buffer == NULL)
+        return;
+    
 	const float* inL = buffer->channels[0];
 	const float* inR = buffer->getNumChannels() > 1 ? buffer->channels[1] : NULL;
 
@@ -215,14 +224,20 @@ void SFZVoice::renderNextBlock(
 	bool ampSegmentIsExponential = ampeg.segmentIsExponential;
 	float loopStart = this->loopStart;
 	float loopEnd = this->loopEnd;
+    
+    // If the buffering hasn't caught up yet.. wait.
+    // could also loop the last part..
+    if(sourceSamplePosition >= buffer->getNumSamples())
+        return;
+    
+	float sampleEnd = buffer->getBufferSize();
+    //buffer->getNumSamples(); //this->sampleEnd
 
-	float sampleEnd = buffer->getNumSamples(); //this->sampleEnd
-    int iSampleEnd = buffer->getNumSamples();
 	while (--numSamples >= 0)
     {
 		int pos = (int) sourceSamplePosition;
         
-        assert(pos >= 0 && pos < buffer->getNumSamples());
+        assert(pos >= 0 && pos < sampleEnd);
         
 
 		// Simple linear interpolation.

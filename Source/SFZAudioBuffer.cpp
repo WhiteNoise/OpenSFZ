@@ -18,9 +18,9 @@ SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned int numSam
 
     if(numSamples < 0 || numSamples > 158760000)
     {
-#ifdef DEBUG
-        printf("ERROR with sample size\n");
-#endif
+
+        sfzDebugPrint("ERROR with sample size\n");
+
         owned = false;
         return;
     }

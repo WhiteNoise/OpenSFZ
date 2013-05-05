@@ -20,8 +20,10 @@ class SFZSample {
         }
     ~SFZSample();
 
-    bool	preload();
+    bool	preload(int numSamples);
     bool	load();
+    void    unload();
+    void    bumpSampleOrder();
     
     bool getFullyLoaded() { return fullyLoaded; };
 
@@ -29,6 +31,7 @@ class SFZSample {
     double	getSampleRate() { return sampleRate; }
     std::string	getShortName();
 
+    int getSampleOrder() { return sampleOrder; };
     
     SFZAudioBuffer* detachBuffer();
     void setBuffer(SFZAudioBuffer* newBuffer);
@@ -41,6 +44,9 @@ class SFZSample {
 #endif
 
 	protected:
+        static unsigned int sampleOrderIndex;
+    
+    unsigned int sampleOrder;
         bool fullyLoaded;
     
         std::string fileName;

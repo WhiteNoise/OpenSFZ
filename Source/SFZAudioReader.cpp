@@ -31,6 +31,17 @@ SFZAudioReader::SFZAudioReader()
     
     vorbisAlloc.alloc_buffer = 0;
     vorbisAlloc.alloc_buffer_length_in_bytes = 0;
+
+    vorbisData = 0;
+    myFormat = 0;
+    myByteRate = 0;
+    mySampleRate = 0;
+    myBytesPerSample = 0;
+    myBitsPerSample = 0;
+    dataChunkPos = 0;
+    myChannels = 1;
+    maxLength = 0;
+    
 };
 
 SFZAudioReader *SFZAudioReader::createReaderForFull()
@@ -56,7 +67,10 @@ SFZAudioReader *SFZAudioReader::createReaderForFull()
         newreader->samplerChunk = samplerChunk;
         newreader->headerIsRead = true;
         newreader->myChannels = myChannels;
-        newreader->buffer->initializeWith(*buffer);
+        
+        if(buffer)
+            newreader->buffer->initializeWith(*buffer);
+        
         newreader->currentReadOffset = currentReadOffset;
         newreader->maxLength = length;
     } else {
@@ -105,8 +119,11 @@ bool SFZAudioReader::readOgg() {
     myDataSize = stb_vorbis_decode_filename(const_cast<char*>(myPath.c_str()), &channelx, &temp);
     result = myDataSize > 0;
     
-    printf("\nchannels = %d\nlength = %d",channelx,myDataSize);
-    printf("\n");
+#ifdef DEBUG
+    char szBuff[256];
+    sprintf(szBuff, "\nchannels = %d\nlength = %d\n",channelx,myDataSize);
+    sfzDebugPrint(szBuff);
+#endif
     
     myChannels=(short)channelx;
     length=myDataSize;
@@ -139,6 +156,9 @@ bool SFZAudioReader::readOgg() {
 
 void SFZAudioReader::setFile(std::string fileName_, unsigned int maxLength_)
 {
+    if(currentFile.is_open())
+        currentFile.close();
+    
     myPath = fileName_;
     maxLength = maxLength_;
     
@@ -227,14 +247,16 @@ void SFZAudioReader::parseWAVHeader(ifstream &inFile)
     length=myDataSize/(myBytesPerSample * myChannels);
 
     if(maxLength == 0)
-        maxLength = length;
-    
-    if(maxLength > length)
-        maxLength = length;
-    
-    buffer = new SFZAudioBuffer(myChannels, maxLength);
-    buffer->setNumSamples(0);
-    buffer->clear();
+    {
+        buffer = 0;
+    } else {
+        if(maxLength > length)
+            maxLength = length;
+        
+        buffer = new SFZAudioBuffer(myChannels, maxLength);
+        buffer->setNumSamples(0);
+        buffer->clear();
+    }
     
     headerIsRead = true;
     
@@ -340,7 +362,7 @@ bool SFZAudioReader::readWav()
 		
 	}else {
         //		cout << "ERROR: Could not load sample: " <<myPath << endl; //This line seems to be hated by windows
-        printf("ERROR: Could not load sample.");
+        sfzDebugPrint("ERROR: Could not load sample.");
         result = false;
 	}
 	
@@ -371,13 +393,12 @@ long SFZAudioReader::getLength() {
 // start pre-loading.. open file etc.
 bool SFZAudioReader::beginLoad()
 {
-
+    print_free_memory();
     if(extension == "wav")
     {
-        if(currentFile.is_open())
-            currentFile.close();
         
-        currentFile.open(myPath.c_str(), ios::in | ios::binary);
+        if(!currentFile.is_open())
+            currentFile.open(myPath.c_str(), ios::in | ios::binary);
         
         assert(currentFile.good());
         
@@ -406,28 +427,32 @@ bool SFZAudioReader::beginLoad()
             mySampleRate = vorbInfo.sample_rate;
             myChannels = vorbInfo.channels;
 
-
-            // FIXME: DRY violation
-            if(maxLength == 0)
-                maxLength = length;
-            
-            if(maxLength > length)
-                maxLength = length;
-            
-            if(!buffer)
-            {
-                buffer = new SFZAudioBuffer(myChannels, maxLength);
-                buffer->setNumSamples(0);
-                buffer->clear();
-            }
             currentReadOffset = 0;
             headerIsRead = true;
 
-            stream();
-            stream();
-            stream();
+            if(maxLength == 0)
+            {
+                buffer = 0;
+                closeStream();
+            } else {
+            
+                if(maxLength > length)
+                    maxLength = length;
+                
+                if(!buffer)
+                {
+                    buffer = new SFZAudioBuffer(myChannels, maxLength);
+                    buffer->setNumSamples(0);
+                    buffer->clear();
+                }
+
+                stream();
+
+            }
+
             return true;
         } else {
+            sfzDebugPrint("Error loading ogg. Out of memory?\n");
             return false;
         }
         
@@ -446,50 +471,51 @@ bool SFZAudioReader::stream()
         assert(currentFile.good());
         
         if(currentFile.good())
-            readWAVData(currentFile, currentReadOffset, 2048);
+            readWAVData(currentFile, currentReadOffset, 1024);
         
         
         return true;
     } else if(extension == "ogg")
     {
-        assert(vorbisData);
+        //assert(vorbisData);
 
         if(vorbisData)
         {
-            int numFrames = 4;
             
-            
-            for(int i=0; i<numFrames; i++)
+            if(currentReadOffset < maxLength && buffer)
             {
-                float **sampleFrames;
-                
+                const int numFrames = 4;
 
-                unsigned int samplesDecoded = stb_vorbis_get_frame_float(vorbisData, NULL, &sampleFrames);
-                
-                if(samplesDecoded)
+                for(int i=0; i<numFrames; i++)
+                if(currentReadOffset < maxLength)
                 {
-                    unsigned int samplesToCopy = samplesDecoded;
-                    if(samplesToCopy > maxLength - currentReadOffset)
-                        samplesToCopy = maxLength - currentReadOffset;
-                    
-                    if(samplesToCopy > 0)
-                    {
+                    float **sampleFrames;
                     
 
+                    unsigned int samplesDecoded = stb_vorbis_get_frame_float(vorbisData, NULL, &sampleFrames);
+                    
+                    if(samplesDecoded)
+                    {
+                        unsigned int samplesToCopy = samplesDecoded;
+                        if(samplesToCopy > maxLength - currentReadOffset)
+                            samplesToCopy = maxLength - currentReadOffset;
                         
-                        for(int i=0; i<myChannels; i++)
+                        if(samplesToCopy > 0)
                         {
-                            for(int j=0; j<samplesToCopy; j++)
+                            for(int i=0; i<myChannels; i++)
                             {
-                                buffer->channels[i][j + currentReadOffset] = sampleFrames[i][j];
+                                for(int j=0; j<samplesToCopy; j++)
+                                {
+                                    buffer->channels[i][j + currentReadOffset] = sampleFrames[i][j];
+                                }
                             }
+                            
+                            currentReadOffset += samplesToCopy;
+                            
+                            // keep what's already in there..
+                            if(buffer->getNumSamples() < currentReadOffset)
+                                buffer->setNumSamples(currentReadOffset);
                         }
-                        
-                        currentReadOffset += samplesToCopy;
-                        
-                        // keep what's already in there..
-                        if(buffer->getNumSamples() < currentReadOffset)
-                            buffer->setNumSamples(currentReadOffset);
                     }
                 }
             }
@@ -514,6 +540,9 @@ void SFZAudioReader::closeStream()
         {
             stb_vorbis_close(vorbisData);
             
+            if(vorbisAlloc.alloc_buffer);
+                delete vorbisAlloc.alloc_buffer;
+            vorbisAlloc.alloc_buffer = 0;
             vorbisData = 0;
             
         }

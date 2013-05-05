@@ -96,7 +96,7 @@ void Synthesizer::addSound (SynthesizerSound *newSound)
 }
 
 /** Removes and deletes one of the sounds. */
-void Synthesizer::removeSound (int index)
+void Synthesizer::deleteSound (int index)
 {
     delete sounds[index];
     

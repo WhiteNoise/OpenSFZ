@@ -53,6 +53,10 @@ void SFZAudioReaderManager::process()
     {
         SFZAudioReader *r = freedReaders.get();
         
+        atomic_t _memUsage = memoryUsage;
+        _memUsage -= r->buffer->getBufferSize() * 4 * r->myChannels;
+        memoryUsage = _memUsage;
+        
         r->closeStream();
         
         std::vector<SFZAudioReader *>::iterator iter = find(readers.begin(), readers.end(), r);
@@ -72,10 +76,25 @@ void SFZAudioReaderManager::process()
     {
         SFZAudioReader *r = newReaders.get();
         
-        r->beginLoad();
-        r->stream();
+        if(r->beginLoad())
+        {
+            r->stream();
+            readers.push_back(r);
+            
+            atomic_t _memUsage = memoryUsage;
+            
+            _memUsage += r->buffer->getBufferSize() * 4 * r->myChannels;
+            
+            memoryUsage = _memUsage;
+            
+            
+        } else {
+            // stream did not load
+            r->closeStream();
+            completeReaders.push_back(r);
+        }
         
-        readers.push_back(r);
+
         
     }
     
@@ -105,7 +124,7 @@ void SFZAudioReaderManager::process()
 
 
 SFZAudioReaderManager::SFZAudioReaderManager()
-: newReaders(1024), freedReaders(1024)
+: newReaders(1024), freedReaders(1024), memoryUsage(0)
 {
     
 }

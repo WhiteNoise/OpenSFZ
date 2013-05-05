@@ -2,12 +2,25 @@
 
 #include <assert.h>
 
-bool SFZSample::preload()
+unsigned int SFZSample::sampleOrderIndex = 0;
+
+void SFZSample::bumpSampleOrder()
 {
+    sampleOrderIndex++;
+    sampleOrder = sampleOrderIndex;
+    
+}
+
+// FIXME: maybe the amount that we preload can depend on how many samples there are and how much memory it would take up..
+// Also, maybe I could keep the 'header' info (length etc) saved, just not the wav buffer.
+bool SFZSample::preload(int numSamples)
+{
+    bumpSampleOrder();
+    
     SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
     
     loader = new SFZAudioReader();
-    loader->setFile(fileName, 10000);
+    loader->setFile(fileName, numSamples);
     
     manager->addReader(loader);
     fullyLoaded = false;
@@ -17,10 +30,12 @@ bool SFZSample::preload()
 
 bool SFZSample::load()
 {
+    bumpSampleOrder();
+    
     // Check for case where we preloaded the whole file? 
 #ifdef SFZ_NO_STREAMING
     loader = new SFZAudioReader();
-    loader->setFile(fileName, 0);
+    loader->setFile(fileName, INT32_MAX);
 
     if(loader->beginLoad())
     {
@@ -45,8 +60,10 @@ bool SFZSample::load()
     } else {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         loader = new SFZAudioReader();
-        loader->setFile(fileName, 0);
+        loader->setFile(fileName, INT_MAX);
         
+        // open the file here?
+        loader->beginLoad();
         
         manager->addReader(loader);
     }
@@ -61,10 +78,36 @@ bool SFZSample::load()
 	return true;
 }
 
+void SFZSample::unload()
+{
+    if(loader)
+    {
+        SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+        manager->releaseReader(loader);
+    
+        loader = 0;
+    } else if(internalBuffer)
+    {
+        // FIXME: this will mess things up for sf2's.. but we're going to change SF2 loading anyway.
+        
+        delete internalBuffer;
+        internalBuffer = 0;
+        
+    }
+
+}
+
 
 SFZSample::~SFZSample()
 {
-    // audio manager 
+    // audio manager
+    
+    if(loader)
+    {
+        SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+        manager->releaseReader(loader);
+        loader = NULL;
+    }
 }
 
 
@@ -80,7 +123,7 @@ std::string SFZSample::getShortName()
 SFZAudioBuffer*	SFZSample::getBuffer()
 {
 
-    if(loader)
+    if(loader && loader->buffer)
     {
         sampleLength = loader->buffer->getNumSamples();
         return loader->buffer;
@@ -89,7 +132,7 @@ SFZAudioBuffer*	SFZSample::getBuffer()
     {
             sampleLength = internalBuffer->getNumSamples();
         return internalBuffer;
-    }
+    } else 
         return NULL;
 }
 
@@ -97,6 +140,9 @@ SFZAudioBuffer*	SFZSample::getBuffer()
 
 void SFZSample::dump()
 {
+    if(!loader)
+        return;
+    
 	printf("%s\n %s\n", fileName.c_str(), loader->getSummary());
 }
 
@@ -122,7 +168,7 @@ SFZAudioBuffer* SFZSample::detachBuffer()
 #ifdef DEBUG
 void SFZSample::checkIfZeroed(const char* where)
 {
-	if (loader->buffer == NULL) {
+	if (!loader || loader->buffer == NULL) {
 		printf("SFZSample::checkIfZeroed(%s): no buffer!", where);
 		return;
 		}
