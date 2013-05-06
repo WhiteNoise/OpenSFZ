@@ -275,13 +275,13 @@ void SFZSound::dump()
 		printf("\n");
 		}
 
-	printf("Regions:\n");
+	printf("Regions (%d):\n", regions.size());
 	int numRegions = regions.size();
 	for (i = 0; i < numRegions; ++i)
 		regions[i]->dump();
 	printf("\n");
 
-	printf("Samples:\n");
+	printf("Samples: (%d)\n", samples.size());
 	for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++)
 		iter->second->dump();
 }

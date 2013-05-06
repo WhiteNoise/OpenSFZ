@@ -12,7 +12,7 @@
 
 #ifndef SFZ_NO_STREAMING
 
-class SFZAudioReader;
+class SFZBaseAudioReader;
 class SFZAudioBuffer;
 
 class SFZAudioReaderManager : NonCopyable
@@ -24,24 +24,26 @@ public:
     static void destroyInstance();
     
     // Start reading from this reader..
-    void addReader(SFZAudioReader *r);
-    void releaseReader(SFZAudioReader *r);
+    void addReader(SFZBaseAudioReader *r);
+    void releaseReader(SFZBaseAudioReader *r);
     
     // process any readers.. 
     void process();
     
     // attempt to estimate how much memory we're using
     atomic_t getMemoryUsage() { return memoryUsage; };
+    
+    static SFZBaseAudioReader *createReader(const std::string &extension);
 private:
     atomic_t memoryUsage;
     SFZAudioReaderManager();
     ~SFZAudioReaderManager();
     
-    LockFreeFifo<SFZAudioReader *> newReaders;
-    LockFreeFifo<SFZAudioReader *> freedReaders;
+    LockFreeFifo<SFZBaseAudioReader *> newReaders;
+    LockFreeFifo<SFZBaseAudioReader *> freedReaders;
     
-    std::vector<SFZAudioReader *> readers;
-    std::vector<SFZAudioReader *> completeReaders;
+    std::vector<SFZBaseAudioReader *> readers;
+    std::vector<SFZBaseAudioReader *> completeReaders;
     
     static SFZAudioReaderManager *instance;
 };

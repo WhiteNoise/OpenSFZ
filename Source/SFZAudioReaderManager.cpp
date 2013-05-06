@@ -32,7 +32,7 @@ void SFZAudioReaderManager::destroyInstance()
 }
 
 // Start reading from this reader..
-void SFZAudioReaderManager::addReader(SFZAudioReader *r)
+void SFZAudioReaderManager::addReader(SFZBaseAudioReader *r)
 {
     if(newReaders.canWrite())
     {
@@ -40,7 +40,7 @@ void SFZAudioReaderManager::addReader(SFZAudioReader *r)
     }
 }
 
-void SFZAudioReaderManager::releaseReader(SFZAudioReader *r)
+void SFZAudioReaderManager::releaseReader(SFZBaseAudioReader *r)
 {
     if(freedReaders.canWrite())
         freedReaders.put(r);
@@ -51,15 +51,15 @@ void SFZAudioReaderManager::process()
 {
     while(freedReaders.canRead())
     {
-        SFZAudioReader *r = freedReaders.get();
+        SFZBaseAudioReader *r = freedReaders.get();
         
         atomic_t _memUsage = memoryUsage;
-        _memUsage -= r->buffer->getBufferSize() * 4 * r->myChannels;
+        _memUsage -= r->buffer->getBufferSize() * 4 * r->getNumChannels();
         memoryUsage = _memUsage;
         
         r->closeStream();
         
-        std::vector<SFZAudioReader *>::iterator iter = find(readers.begin(), readers.end(), r);
+        std::vector<SFZBaseAudioReader *>::iterator iter = find(readers.begin(), readers.end(), r);
                 
         if(iter != readers.end())
             readers.erase(iter);
@@ -74,7 +74,7 @@ void SFZAudioReaderManager::process()
     
     while(newReaders.canRead())
     {
-        SFZAudioReader *r = newReaders.get();
+        SFZBaseAudioReader *r = newReaders.get();
         
         if(r->beginLoad())
         {
@@ -83,7 +83,7 @@ void SFZAudioReaderManager::process()
             
             atomic_t _memUsage = memoryUsage;
             
-            _memUsage += r->buffer->getBufferSize() * 4 * r->myChannels;
+            _memUsage += r->buffer->getBufferSize() * 4 * r->getNumChannels();
             
             memoryUsage = _memUsage;
             
@@ -93,12 +93,9 @@ void SFZAudioReaderManager::process()
             r->closeStream();
             completeReaders.push_back(r);
         }
-        
-
-        
     }
     
-    std::vector<SFZAudioReader *>::iterator iter2;
+    std::vector<SFZBaseAudioReader *>::iterator iter2;
     
     for(iter2 = readers.begin(); iter2 != readers.end(); )
     {
@@ -115,11 +112,7 @@ void SFZAudioReaderManager::process()
             
             iter2++;
         }
-        
-
     }
-    
-    
 }
 
 
@@ -139,4 +132,14 @@ SFZAudioReaderManager::~SFZAudioReaderManager()
 
     }
     readers.clear();
+}
+
+SFZBaseAudioReader *SFZAudioReaderManager::createReader(const std::string &extension)
+{
+    if(extension == "wav")
+        return new SFZWavAudioReader();
+    else if(extension == "ogg")
+        return new SFZOggAudioReader();
+    
+    return NULL;
 }

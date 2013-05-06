@@ -19,7 +19,7 @@ bool SFZSample::preload(int numSamples)
     
     SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
     
-    loader = new SFZAudioReader();
+    loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
     loader->setFile(fileName, numSamples);
     
     manager->addReader(loader);
@@ -52,14 +52,15 @@ bool SFZSample::load()
     {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         
-        SFZAudioReader *newloader = loader->createReaderForFull();
+        SFZBaseAudioReader *newloader = loader->createReaderForFull();
         manager->releaseReader(loader);
         loader = newloader;
         manager->addReader(loader);
         
     } else {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
-        loader = new SFZAudioReader();
+        
+        loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
         loader->setFile(fileName, INT_MAX);
         
         // open the file here?
@@ -70,10 +71,10 @@ bool SFZSample::load()
 #endif
     
     fullyLoaded = true;
-    sampleRate = loader->mySampleRate;
-    sampleLength = loader->getLength();
-    loopStart = loader->loopStart;
-    loopEnd = loader->loopEnd;
+    sampleRate = loader->getSampleRate();
+    sampleLength = 0;
+    loopStart = loader->getLoopStart();
+    loopEnd = loader->getLoopEnd();;
     
 	return true;
 }
@@ -88,10 +89,6 @@ void SFZSample::unload()
         loader = 0;
     } else if(internalBuffer)
     {
-        // FIXME: this will mess things up for sf2's.. but we're going to change SF2 loading anyway.
-        
-        delete internalBuffer;
-        internalBuffer = 0;
         
     }
 

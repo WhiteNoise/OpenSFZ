@@ -19,47 +19,57 @@
 
 class SFZAudioBuffer;
 
-// I really should restructure this to seperate out the ogg / wav loading.. this is a mess.
-
-class SFZAudioReader  {
-	
-
+class SFZBaseAudioReader
+{
 public:
     
+    SFZBaseAudioReader();
+    virtual ~SFZBaseAudioReader();
+
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX) = 0;
+    
+    // start pre-loading.. open file etc.
+    virtual bool beginLoad() = 0;
+    
+    // stream the next N bytes..
+    virtual bool stream() = 0;
+    
+    // stop streaming.
+	virtual void closeStream() = 0;
+    
+    virtual bool isStreamFinished() = 0;
+
+    virtual SFZBaseAudioReader *createReaderForFull() = 0;
+    
+    const char *getSummary();
+    
+    int getNumChannels() { return myChannels; };
+    int getSampleRate() { return mySampleRate; };
+    int getLoopStart() { return loopStart; };
+    int getLoopEnd() { return loopEnd; };
+    SFZAudioBuffer *buffer;
+protected:
     int     loopStart;
     int     loopEnd;
-
+    
 	short 	myChannels;
 	int   	mySampleRate;
 
-	long getLength();
-	
-	
-
-    SFZAudioBuffer *buffer;
-	
-	// get/set for the Path property
-	
-	~SFZAudioReader()
-	{
-        closeStream();
-		
-        if (myData)
-            delete (myData);
-
-        if(buffer)
-            delete buffer;
-        
-        //printf("freeing SampleData");
-        
-
-        
-	}
-	
-    SFZAudioReader();
-
     
-    // 0 = no limit.
+    std::string 	myPath;
+
+    unsigned int maxLength;
+
+};
+
+class SFZWavAudioReader : public SFZBaseAudioReader
+{
+public:
+	SFZWavAudioReader();
+	virtual ~SFZWavAudioReader();
+
+
+
     void setFile(std::string fileName_, unsigned int maxLength_ = 0);
     
     // start pre-loading.. open file etc.
@@ -71,26 +81,12 @@ public:
     // stop streaming.
 	void closeStream();
     
-    
     bool isStreamFinished() { return currentReadOffset >= maxLength; };
-
     
-	
-    bool isHeaderRead() { return headerIsRead; };
-	
-	// return a printable summary of the wav file
-	char *getSummary()
-	{
-		char *summary = new char[250];
-		sprintf(summary, " Format: %d\n Channels: %d\n SampleRate: %d\n ByteRate: %d\n BlockAlign: %d\n BitsPerSample: %d\n DataSize: %d\n", myFormat, myChannels, mySampleRate, myByteRate, myBlockAlign, myBitsPerSample, myDataSize);
-
-		return summary;
-	}
-    
-    SFZAudioReader *createReaderForFull();
+    SFZBaseAudioReader *createReaderForFull();
     
 private:
-    std::string 	myPath;
+
 	int 	myChunkSize;
 	int	mySubChunk1Size;
     
@@ -160,27 +156,47 @@ private:
     void parseWAVHeader(std::ifstream &inFile);
     void readWAVData(std::ifstream &inFile, unsigned int startOffset, unsigned int maxToRead = 0);
     int32_t parseSMPLChunk(std::ifstream &f, long dataLength);
-    
-	// read a wav file into this class
-	bool readWav();
-	//read an ogg file into this class using stb_vorbis
-    bool readOgg();
 
-    
-    unsigned int maxLength;
     unsigned int length;
     unsigned int currentReadOffset;
-    
-    std::string extension;
-    
+        
     bool headerIsRead;
     
     std::ifstream currentFile;
+
     
-    // ogg stuff..
+};
+
+class SFZOggAudioReader : public SFZBaseAudioReader  {
+public:
+    SFZOggAudioReader();
+    virtual ~SFZOggAudioReader();
+    
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX);
+    
+    // start pre-loading.. open file etc.
+    virtual bool beginLoad();
+    
+    // stream the next N bytes..
+    virtual bool stream();
+    
+    // stop streaming.
+	virtual void closeStream();
+    
+    bool isStreamFinished() { return currentReadOffset >= maxLength; };
+    
+    virtual SFZBaseAudioReader *createReaderForFull();
+
+    
+protected:
+    unsigned int currentReadOffset;
     
     stb_vorbis_alloc vorbisAlloc;
     stb_vorbis *vorbisData;
+    
+    // length of the ogg stream.
+    unsigned int length;
+
 };
 
 

@@ -52,7 +52,7 @@ class SFZSample {
         std::string fileName;
 		double	sampleRate;
     
-        SFZAudioReader *loader;
+        SFZBaseAudioReader *loader;
         SFZAudioBuffer *internalBuffer;
 	};
 

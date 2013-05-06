@@ -192,6 +192,12 @@ SFZAudioBuffer* SF2Reader::readSamples(
 		sound->addError("SF2 is missing its \"smpl\" chunk.");
 		return NULL;
 		}
+    
+    // The plan for making this streamable..
+    // in Read, find the start of the smpl chunk.
+    // create a 'sf2' audioreader.. Set the start of the sample chunk + the offset
+    // we'll neeed to fix the offset, end, loop_start, and loop_end to be relative to zero position..
+    //  
 
 	// Allocate the SFZAudioBuffer.
 	unsigned long numSamples = chunk.size / sizeof(short);
@@ -220,13 +226,8 @@ SFZAudioBuffer* SF2Reader::readSamples(
 
 		samplesLeft -= samplesToRead;
 
-		if (progressVar)
-			*progressVar = (float) (numSamples - samplesLeft) / numSamples;
-		//if (thread && thread->threadShouldExit()) {
-		//	delete buffer;
-		//	delete sampleBuffer;
-		//	return NULL;
-		//	}
+
+
     }
 	delete buffer;
 
