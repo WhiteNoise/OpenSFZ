@@ -13,6 +13,9 @@ SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned int numSam
 {
     channels[0] = 0;
     channels[1] = 0;
+    channelPtr[0] = 0;
+    channelPtr[1] = 0;
+
     
     bufferSize = numSamples = numSamples_;
 
@@ -99,26 +102,26 @@ void SFZAudioBuffer::initializeWith(const SFZAudioBuffer &other)
     
     assert(numChannels == other.numChannels);
     
+
+    
     numSamples = other.numSamples;
     
-    int samplesToCopy;
-    
-    if(other.numSamples < bufferSize)
+    if(numSamples > bufferSize)
     {
-        samplesToCopy = other.numSamples;
-    } else {
-        samplesToCopy = bufferSize;
+        numSamples = bufferSize;
     }
-
+    
+    
     for(unsigned int i=0; i<numChannels; i++)
     {
-        for(unsigned int j=0; j<samplesToCopy; j++)
+
+        for(unsigned int j=0; j<numSamples; j++)
         {
             channels[i][j] = other.channels[i][j];
+
         }
     }
     
-    numSamples = other.numSamples;
     
 }
 

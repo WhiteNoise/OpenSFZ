@@ -2,7 +2,18 @@
 #include "SF2Reader.h"
 #include "SFZSample.h"
 
+SF2Sound::Preset::~Preset()
+{
+    for(int i=0; i<regions.size(); i++)
+    {
+//        delete regions[i]->sample;
+        delete regions[i];
+    }
+    regions.clear();
+    
+}
 
+/////////////
 
 SF2Sound::SF2Sound(const Path& file)
 	: SFZSound(file)
@@ -15,12 +26,18 @@ SF2Sound::~SF2Sound()
 	// "presets" owns the regions, so clear them out of "regions" so ~SFZSound()
 	// doesn't try to delete them.
 	regions.clear();
+    
+    for(int i=0; i<presets.size(); i++)
+    {
+        delete presets[i];
+    }
+    
+    presets.clear();
 
-	// The samples all share a single buffer, so make sure they don't all delete it.
-	SFZAudioBuffer* buffer = NULL;
-	for (std::map<unsigned long, SFZSample*>::iterator iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
-		buffer = iter->second->detachBuffer();
-	delete buffer;
+
+	for (std::map<unsigned int, SFZSample*>::iterator iter = samplesByOffset.begin(); iter != samplesByOffset.end(); iter++)
+		delete iter->second;
+
 }
 
 
@@ -51,15 +68,35 @@ void SF2Sound::loadSamples(
 	double* progressVar)
 {
 	SF2Reader reader(this, file);
-	SFZAudioBuffer* buffer = reader.readSamples(progressVar);
-	if (buffer)
-    {
-		// All the SFZSamples will share the buffer.
-        std::map<unsigned long, SFZSample*>::iterator iter;
-        
-		for (iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
-			iter->second->setBuffer(buffer);
-    }
+    reader.findSamples();
+
+    
+    	for (std::map<unsigned int, SFZSample*>::iterator iter = samplesByOffset.begin(); iter != samplesByOffset.end(); iter++)
+        {
+            
+            SFZSample* sample  = iter->second;
+            // fix offset.
+            sample->setSf2Start(sample->getSf2Start() + reader.sampleChunkStart);
+
+            bool ok = false;
+            
+            #ifdef SFZ_NO_STREAMING
+                ok = sample->load();
+            #else
+                ok = sample->preload(1024);
+            #endif
+            
+            if (!ok)
+                addError("Couldn't load sample \"" + sample->getShortName() + "\"");
+
+        }
+    
+    printf("Loaded %d", samplesByOffset.size());
+
+    
+
+
+    
 
 	if (progressVar)
 		*progressVar = 1.0;
@@ -110,25 +147,17 @@ int SF2Sound::selectedSubsound()
 }
 
 
-SFZSample* SF2Sound::sampleFor(unsigned long sampleRate)
+SFZSample* SF2Sound::sampleFor(unsigned int offset, const std::string &path)
 {
-	SFZSample* sample = samplesByRate[sampleRate];
+	SFZSample* sample = samplesByOffset[offset];
 	if (sample == NULL) {
-		sample = new SFZSample(sampleRate);
-		samplesByRate[sampleRate] = sample;
+		sample = new SFZSample(path);
+		samplesByOffset[offset] = sample;
 		}
 	return sample;
 }
 
 
-void SF2Sound::setSamplesBuffer(SFZAudioBuffer* buffer)
-{
-    
-    std::map<unsigned long, SFZSample*>::iterator iter;
-    
-    for (iter = samplesByRate.begin(); iter != samplesByRate.end(); iter++)
-        iter->second->setBuffer(buffer);
-}
 
 
 

@@ -2,7 +2,7 @@
 #include <math.h>
 
 static const float fastReleaseTime = 0.01;
-
+const float SFZEG::bottomLevel = 0.001f;
 
 SFZEG::SFZEG()
 	: exponentialDecay(false)

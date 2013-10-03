@@ -18,6 +18,7 @@
 
 
 class SFZAudioBuffer;
+class InputStream;
 
 class SFZBaseAudioReader
 {
@@ -48,6 +49,8 @@ public:
     int getLoopStart() { return loopStart; };
     int getLoopEnd() { return loopEnd; };
     SFZAudioBuffer *buffer;
+    
+    std::string getPath() { return myPath; };
 protected:
     int     loopStart;
     int     loopEnd;
@@ -59,7 +62,15 @@ protected:
     std::string 	myPath;
 
     unsigned int maxLength;
-
+    
+    enum WavSampleBitFormat
+    {
+        eSampleInt16 = 0x01, ///< samples are represented by 16 bits int numbers
+        eSampleFloat32 = 0x03,///< samples are represented by float numbers (32 bits)
+        eSampleFormatALAW = 0x06, // not supported
+        eSampleFormatMULAW = 0x07, // not supported
+        eSampleFormatExtensible = 0xFFFE
+    };
 };
 
 class SFZWavAudioReader : public SFZBaseAudioReader
@@ -197,6 +208,40 @@ protected:
     // length of the ogg stream.
     unsigned int length;
 
+};
+
+class SF2AudioReader : public SFZBaseAudioReader {
+public:
+    
+    SF2AudioReader();
+    virtual ~SF2AudioReader();
+    
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX);
+    
+    virtual void setWaveChunkPosition(unsigned int waveOffset_, unsigned int waveLength_);
+    
+    // start pre-loading.. open file etc.
+    virtual bool beginLoad();
+    
+    // stream the next N bytes..
+    virtual bool stream();
+    
+    // stop streaming.
+	virtual void closeStream();
+    
+    bool isStreamFinished() { return currentReadOffset >= maxLength; };
+    
+    virtual SFZBaseAudioReader *createReaderForFull();
+    
+    
+protected:
+    InputStream *currentFile;
+    
+    unsigned int waveOffset;
+    unsigned int waveLength;
+    
+    unsigned int currentReadOffset;
+    
 };
 
 

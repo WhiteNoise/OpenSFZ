@@ -13,7 +13,8 @@ class SF2Sound : public SFZSound {
 		void	loadRegions();
 		void	loadSamples(double* progressVar = NULL);
 
-		struct Preset {
+		struct Preset
+        {
             std::string	name;
 			int    	bank;
 			int   	preset;
@@ -21,18 +22,13 @@ class SF2Sound : public SFZSound {
 
 			Preset(std::string nameIn, int bankIn, int presetIn)
 				: name(nameIn), bank(bankIn), preset(presetIn) {}
-			~Preset()
-            {
-                for(int i=0; i<regions.size(); i++)
-                    delete regions[i];
-                regions.clear();
-                
-            }
+			~Preset();
 
-			void	addRegion(SFZRegion* region) {
+			void	addRegion(SFZRegion* region)
+            {
 				regions.push_back(region);
-				}
-			};
+            }
+        };
 		void	addPreset(Preset* preset);
 
 		int	numSubsounds();
@@ -40,12 +36,13 @@ class SF2Sound : public SFZSound {
 		void	useSubsound(int whichSubsound);
 		int 	selectedSubsound();
 
-		SFZSample*	sampleFor(unsigned long sampleRate);
-		void	setSamplesBuffer(SFZAudioBuffer* buffer);
+//		SFZSample*	sampleFor(unsigned long sampleRate);
+    SFZSample*	sampleFor(unsigned int offset, const std::string &path);
+
 
 	protected:
         std::vector<Preset *>	presets;
-        std::map<unsigned long, SFZSample*>	samplesByRate;
+        std::map<unsigned int, SFZSample*>	samplesByOffset;
 		int               	selectedPreset;
 	};
 

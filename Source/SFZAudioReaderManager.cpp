@@ -90,6 +90,8 @@ void SFZAudioReaderManager::process()
             
         } else {
             // stream did not load
+            sfzDebugPrint("Error, stream didn't load");
+            printf(r->getPath().c_str());
             r->closeStream();
             completeReaders.push_back(r);
         }
@@ -140,6 +142,8 @@ SFZBaseAudioReader *SFZAudioReaderManager::createReader(const std::string &exten
         return new SFZWavAudioReader();
     else if(extension == "ogg")
         return new SFZOggAudioReader();
+    else if(extension == "sf2")
+        return new SF2AudioReader();
     
     return NULL;
 }

@@ -81,6 +81,8 @@ SFZSample* SFZSound::addSample(string pathStr, string defaultPathStr)
 }
 
 
+
+
 void SFZSound::addError(const string& message)
 {
 	errors.push_back(message);

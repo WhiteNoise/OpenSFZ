@@ -237,7 +237,7 @@ void SFZVoice::renderNextBlock(
     {
 		int pos = (int) sourceSamplePosition;
         
-        assert(pos >= 0 && pos < sampleEnd);
+        assert(pos >= 0 && pos < (int)sampleEnd);
         
 
 		// Simple linear interpolation.

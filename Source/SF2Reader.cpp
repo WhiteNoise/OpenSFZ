@@ -9,6 +9,7 @@
 SF2Reader::SF2Reader(SF2Sound* soundIn, const Path& p)
 	: sound(soundIn)
 {
+    filePath = p;
 	file = p.createInputStream();
 }
 
@@ -110,13 +111,32 @@ void SF2Reader::read()
 									// Pin initialAttenuation to max +6dB.
 									if (zoneRegion.volume > 6.0) {
 										zoneRegion.volume = 6.0;
-										sound->addUnsupportedOpcode(
-											"extreme gain in initialAttenuation");
-										}
+										sound->addUnsupportedOpcode("extreme gain in initialAttenuation");
+                                    }
 
 									SFZRegion* newRegion = new SFZRegion();
 									*newRegion = zoneRegion;
-									newRegion->sample = sound->sampleFor(shdr->sampleRate);
+
+
+
+                                    /*
+                                    SFZSample *samp = sound->sampleFor(newRegion->offset, filePath.getFullPath());
+
+									newRegion->sample = samp;
+                                    newRegion->sample->setSampleRate(shdr->sampleRate);
+                                    
+                                    samp->setSf2Start((sizeof(short) * (unsigned int)newRegion->offset));
+                                    samp->setSf2Length((unsigned int)(newRegion->end - newRegion->offset));
+
+                                    unsigned int offset = newRegion->offset;
+                                    newRegion->end -= offset;
+                                    newRegion->loop_start -= offset;
+                                    newRegion->loop_end -= offset;
+                                    newRegion->offset = 0;
+                                    samp->loopStart = newRegion->loop_start;
+                                    samp->loopEnd = newRegion->loop_end;
+
+*/
 									preset->addRegion(newRegion);
 									hadSampleID = true;
 									}
@@ -153,7 +173,56 @@ void SF2Reader::read()
 		}
 }
 
-
+void SF2Reader::findSamples()
+{
+	static const unsigned long bufferSize = 32768;
+    
+	if (file == NULL) {
+		sound->addError("Couldn't open file.");
+		return;
+    }
+    
+	// Find the "sdta" chunk.
+	file->setPosition(0);
+	RIFFChunk riffChunk;
+	riffChunk.ReadFrom(file);
+	bool found = false;
+	RIFFChunk chunk;
+	while (file->getPosition() < riffChunk.End()) {
+		chunk.ReadFrom(file);
+		if (FourCCEquals(chunk.id, "sdta")) {
+			found = true;
+			break;
+        }
+		chunk.SeekAfter(file);
+    }
+	int64 sdtaEnd = chunk.End();
+	found = false;
+	while (file->getPosition() < sdtaEnd) {
+		chunk.ReadFrom(file);
+		if (FourCCEquals(chunk.id, "smpl")) {
+			found = true;
+			break;
+        }
+		chunk.SeekAfter(file);
+    }
+	if (!found) {
+		sound->addError("SF2 is missing its \"smpl\" chunk.");
+		return;
+    }
+    
+    // The plan for making this streamable..
+    // in Read, find the start of the smpl chunk.
+    // create a 'sf2' audioreader.. Set the start of the sample chunk + the offset
+    // we'll neeed to fix the offset, end, loop_start, and loop_end to be relative to zero position..
+    //
+    
+	// Allocate the SFZAudioBuffer.
+	sampleChunkSize = chunk.size / sizeof(short);
+    sampleChunkStart = file->getPosition();
+    
+}
+/*
 SFZAudioBuffer* SF2Reader::readSamples(
 	double* progressVar)
 {
@@ -236,6 +305,7 @@ SFZAudioBuffer* SF2Reader::readSamples(
 
 	return sampleBuffer;
 }
+ */
 
 
 void SF2Reader::addGeneratorToRegion(

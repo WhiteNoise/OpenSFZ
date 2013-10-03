@@ -39,11 +39,11 @@ SFZBaseAudioReader::~SFZBaseAudioReader()
 
 const char *SFZBaseAudioReader::getSummary()
 {
-    static char buffer[256];
+    static char chr[256];
     
-    sprintf(buffer, "Channels: %d\nSamplerate: %d\nLoop Start: %d, end: %d", myChannels, mySampleRate, loopStart, loopEnd);
+    sprintf(chr, "Channels: %d\nSamplerate: %d\n", myChannels, mySampleRate);
     
-    return buffer;
+    return chr;
 }
 //////////////////////////////////////////////////////////////////
 
@@ -272,48 +272,75 @@ void SFZWavAudioReader::readWAVData(ifstream &inFile, unsigned int startOffset, 
     
     int position = 0;
     
-    
-    if(myBitsPerSample == 16)
+    if(myFormat == eSampleInt16)
     {
-        short int *temp;
-        
-        temp = (short int *)&myData[0];
-        
-        // FIXME: endian swap?
-        
-        for(int i=0; i<samplesToRead; i++)
-            for(int j=0; j<myChannels; j++)
-                buffer->channels[j][i + startOffset] = (float)temp[position++] / 32768.0f;
-    }
-    else if(myBitsPerSample == 24)
+        if(myBitsPerSample == 16)
+        {
+            short int *temp;
+            
+            temp = (short int *)&myData[0];
+            
+            // FIXME: endian swap?
+            
+            for(int i=0; i<samplesToRead; i++)
+                for(int j=0; j<myChannels; j++)
+                    buffer->channels[j][i + startOffset] = (float)temp[position++] / 32768.0f;
+        }
+        else if(myBitsPerSample == 24)
+        {
+            // FIXME: endian swap?
+            
+            for(int i=0; i<samplesToRead; i++)
+                for(int j=0; j<myChannels; j++)
+                {
+                    
+                    int32_t sample = (unsigned char)myData[position+2];
+                    sample = (sample << 8) | (unsigned char)myData[position+1];
+                    sample = (sample << 8) | (unsigned char)myData[position];
+                    sample <<= 8;
+                    
+                    buffer->channels[j][i + startOffset] = (float)((double)sample / (double)INT32_MAX);
+                    
+                    position += 3;
+                }
+        }
+        else if(myBitsPerSample == 32)
+        {
+            // FIXME: endian swap?
+            
+            int32_t *temp;
+            
+            temp = (int32_t *)&myData[0];
+            
+            for(int i=0; i<samplesToRead; i++)
+                for(int j=0; j<myChannels; j++)
+                {
+                    int32_t v = temp[position++];
+                    //v = __builtin_bswap32 (v);
+
+                    buffer->channels[j][i + startOffset] = (float)((double) v / (double)INT32_MAX);
+                }
+        }
+    } else if(myFormat == eSampleFloat32)
     {
-        // FIXME: endian swap?
+        if(myBitsPerSample == 32)
+        {
+            float_t *temp;
+            
+            temp = (float_t *)&myData[0];
+            
+            for(int i=0; i<samplesToRead; i++)
+                for(int j=0; j<myChannels; j++)
+                {
+                    float_t v = temp[position++];
+                    
+                    buffer->channels[j][i + startOffset] = v;
+                }
+            
+        }
+    } else {
+        // unsupported format.
         
-        for(int i=0; i<samplesToRead; i++)
-            for(int j=0; j<myChannels; j++)
-            {
-                
-                int32_t sample = (unsigned char)myData[position+2];
-                sample = (sample << 8) | (unsigned char)myData[position+1];
-                sample = (sample << 8) | (unsigned char)myData[position];
-                sample <<= 8;
-                
-                buffer->channels[j][i + startOffset] = (float)((double)sample / (double)INT32_MAX);
-                
-                position += 3;
-            }
-    }
-    else if(myBitsPerSample == 32)
-    {
-        // FIXME: endian swap?
-        
-        int32_t *temp;
-        
-        temp = (int32_t *)&myData[0];
-        
-        for(int i=0; i<samplesToRead; i++)
-            for(int j=0; j<myChannels; j++)
-                buffer->channels[j][i + startOffset] = (float)((double)temp[position++] / (double)INT32_MAX);
     }
     
     currentReadOffset += samplesToRead;
@@ -637,3 +664,143 @@ bool SFZBaseAudioReader::readOgg() {
     return 0;
 }
 */
+
+
+
+SF2AudioReader::SF2AudioReader()
+{
+    currentFile = 0;
+    currentReadOffset = 0;
+    myChannels = 1;
+}
+
+SF2AudioReader::~SF2AudioReader()
+{
+    if(currentFile)
+        delete currentFile;
+    currentFile = 0;
+    
+    waveOffset = 0;
+    waveLength = 0;
+    
+}
+
+void SF2AudioReader::setFile(std::string fileName_, unsigned int maxLength_)
+{
+    if(currentFile)
+        delete currentFile;
+    currentFile = 0;
+    
+    myPath = fileName_;
+    maxLength = maxLength_;
+}
+
+void SF2AudioReader::setWaveChunkPosition(unsigned int waveOffset_, unsigned int waveLength_)
+{
+    waveOffset = waveOffset_;
+    waveLength = waveLength_;
+}
+
+// start pre-loading.. open file etc.
+bool SF2AudioReader::beginLoad()
+{
+    Path p(myPath);
+    
+    //if(!p.exists())
+    //    return false;
+    
+    currentFile = p.createInputStream();
+    currentFile->setPosition(waveOffset);
+    
+
+    
+    if(maxLength > waveLength)
+        maxLength = waveLength;
+    
+    if(!buffer)
+    {
+        buffer = new SFZAudioBuffer(myChannels, maxLength);
+        buffer->setNumSamples(0);
+        buffer->clear();
+    }
+    
+    stream();
+    
+    return true;
+    
+}
+
+// stream the next N bytes..
+bool SF2AudioReader::stream()
+{
+    
+    
+    if(maxLength > waveLength)
+        maxLength = waveLength;
+    
+    
+	// Read and convert.
+	short shortBuffer[1024];
+	unsigned long samplesLeft = maxLength - currentReadOffset;
+    
+    // only read 1024 at a time.
+    if(samplesLeft > 1024)
+        samplesLeft = 1024;
+    
+    
+	float* out = &buffer->channels[0][currentReadOffset];
+		// Read the buffer.
+    currentFile->read(shortBuffer, samplesLeft * sizeof(short));
+    
+    // Convert from signed 16-bit to float.
+    unsigned long samplesToConvert = samplesLeft;
+    short* in = shortBuffer;
+    for (; samplesToConvert > 0; --samplesToConvert) {
+        // If we ever need to compile for big-endian platforms, we'll need to
+        // byte-swap here.
+        *out++ = *in++ / 32767.0;
+    }
+    
+    atomic_t newOffset = currentReadOffset + samplesLeft;
+    currentReadOffset = newOffset;
+    
+    if(buffer->getNumSamples() < currentReadOffset)
+        buffer->setNumSamples(currentReadOffset);
+
+    
+    return true;
+}
+
+// stop streaming.
+void SF2AudioReader::closeStream()
+{
+    if(currentFile)
+        delete currentFile;
+    currentFile = 0;
+}
+
+SFZBaseAudioReader *SF2AudioReader::createReaderForFull()
+{
+    SF2AudioReader *newreader = new SF2AudioReader();
+    newreader->maxLength = 0;
+    
+
+    newreader->buffer = new SFZAudioBuffer(1, waveLength);
+    newreader->mySampleRate = mySampleRate;
+    newreader->myChannels = myChannels;
+
+    newreader->loopStart = loopStart;
+    newreader->loopEnd = loopEnd;
+    newreader->waveLength = waveLength;
+    newreader->waveOffset = waveOffset;
+
+    newreader->myPath = myPath;
+    
+    if(buffer)
+        newreader->buffer->initializeWith(*buffer);
+    
+    newreader->currentReadOffset = currentReadOffset;
+    newreader->maxLength = waveLength;
+
+    return (SFZBaseAudioReader *)newreader;
+}

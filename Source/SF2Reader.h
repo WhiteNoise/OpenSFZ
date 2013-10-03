@@ -14,13 +14,15 @@ class SF2Reader {
 		~SF2Reader();
 
 		void	read();
-		SFZAudioBuffer*	readSamples(
-			double* progressVar = NULL);
+		//SFZAudioBuffer*	readSamples(double* progressVar = NULL);
+        void    findSamples();
+    unsigned int sampleChunkStart;
+    unsigned int sampleChunkSize;
 
 	protected:
 		SF2Sound*	sound;
 		InputStream*	file;
-
+    Path filePath;
 		void	addGeneratorToRegion(
 			word genOper, SF2::genAmountType* amount, SFZRegion* region);
 	};

@@ -22,6 +22,12 @@ bool SFZSample::preload(int numSamples)
     loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
     loader->setFile(fileName, numSamples);
     
+    if(Path(fileName).getExtension() == "sf2")
+    {
+        ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+    }
+
+
     manager->addReader(loader);
     fullyLoaded = false;
     
@@ -31,16 +37,23 @@ bool SFZSample::preload(int numSamples)
 bool SFZSample::load()
 {
     bumpSampleOrder();
-    
+    bool ok = false;
     // Check for case where we preloaded the whole file? 
 #ifdef SFZ_NO_STREAMING
-    loader = new SFZAudioReader();
+    SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+    
+    loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
     loader->setFile(fileName, INT32_MAX);
+    
+    if(Path(fileName).getExtension() == "sf2")
+    {
+        ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+    }
 
     if(loader->beginLoad())
     {
-    
-        while(loader->isStreamFinished())
+        ok = true;
+        while(!loader->isStreamFinished())
         {
             loader->stream();
         }
@@ -56,15 +69,21 @@ bool SFZSample::load()
         manager->releaseReader(loader);
         loader = newloader;
         manager->addReader(loader);
-        
+        ok = true;
     } else {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         
         loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
+        
         loader->setFile(fileName, INT_MAX);
+        if(Path(fileName).getExtension() == "sf2")
+        {
+            ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+        }
+
         
         // open the file here?
-        loader->beginLoad();
+        ok = loader->beginLoad();
         
         manager->addReader(loader);
     }
@@ -76,7 +95,7 @@ bool SFZSample::load()
     loopStart = loader->getLoopStart();
     loopEnd = loader->getLoopEnd();;
     
-	return true;
+	return ok;
 }
 
 void SFZSample::unload()

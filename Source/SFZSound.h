@@ -20,6 +20,7 @@ class SFZSound : public SynthesizerSound {
 
 		void	addRegion(SFZRegion* region); 	// Takes ownership of the region.
         SFZSample*	addSample(std::string path, std::string defaultPath = std::string(""));
+        SFZSample* addSampleSF2(std::string name, std::string path);
 		void	addError(const std::string& message);
 		void	addUnsupportedOpcode(const std::string& opcode);
 
