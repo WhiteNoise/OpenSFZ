@@ -54,9 +54,13 @@ void SFZVoice::startNote(
 		killNote();
 		return;
 		}
+    
 
+    
 	int velocity = (int) (floatVelocity * 127.0);
 	curVelocity = velocity;
+    
+
     
 	if (region == NULL)
 		region = sound->getRegionFor(midiNoteNumber, velocity);
@@ -103,7 +107,29 @@ void SFZVoice::startNote(
 	double velocityGainDB = -20.0 * log10((127.0 * 127.0) / (velocity * velocity));
 	velocityGainDB *= region->amp_veltrack / 100.0;
 	noteGainDB += velocityGainDB;
-	noteGainLeft = noteGainRight = decibelsToGain(noteGainDB);
+    
+    double xfademult = 1.0f;
+    
+    if(region->xfinlokey != region->xfinhikey)
+    {
+        if(midiNoteNumber >= region->xfinlokey && midiNoteNumber <= region->xfinhikey)
+        {
+            xfademult *= (double)(midiNoteNumber - region->xfinlokey) / (double)(region->xfinhikey - region->xfinlokey);
+        }
+    }
+
+    if(region->xfoutlokey != region->xfouthikey)
+    {
+        if(midiNoteNumber >= region->xfoutlokey && midiNoteNumber <= region->xfouthikey)
+        {
+            xfademult *= (1.0 - ((double)(midiNoteNumber - region->xfoutlokey) / (double)(region->xfouthikey - region->xfoutlokey)));
+        }
+    }
+
+    
+	noteGainLeft = noteGainRight = decibelsToGain(noteGainDB) * xfademult;
+
+    
 	// The SFZ spec is silent about the pan curve, but a 3dB pan law seems
 	// common.  This sqrt() curve matches what Dimension LE does; Alchemy Free
 	// seems closer to sin(adjustedPan * pi/2).

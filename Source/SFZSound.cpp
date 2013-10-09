@@ -171,6 +171,7 @@ void SFZSound::checkMemoryUsage()
     {
         unsigned int oldest = INT_MAX;
         SFZSample *oldestSample = NULL;
+        map<string,SFZSample*>::iterator oldestIter;
         
         for (map<string,SFZSample*>::iterator iter = samples.begin(); iter != samples.end(); iter++ )
         {
@@ -179,6 +180,7 @@ void SFZSound::checkMemoryUsage()
             if(sample->getSampleOrder() < oldest)
             {
                 oldestSample = sample;
+                oldestIter = iter;
                 oldest = sample->getSampleOrder();
             }
         }
@@ -188,8 +190,11 @@ void SFZSound::checkMemoryUsage()
                 memoryUsage -= oldestSample->getBuffer()->getBufferSize() * 4 * oldestSample->getBuffer()->getNumChannels();
             
             oldestSample->unload();
+            
+            samples.erase(oldestIter);
         }
 
+        assert(oldestSample);
 
     }
 }

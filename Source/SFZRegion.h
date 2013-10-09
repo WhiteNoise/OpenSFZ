@@ -46,6 +46,9 @@ class SFZRegion {
 
 		SFZSample* sample;
 		unsigned char lokey, hikey;
+		unsigned char xfinlokey, xfinhikey;
+		unsigned char xfoutlokey, xfouthikey;
+    
 		unsigned char lovel, hivel;
 		Trigger trigger;
 		unsigned long group, off_by;
