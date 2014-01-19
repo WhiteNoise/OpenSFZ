@@ -8,19 +8,24 @@
 class SFZSample {
 	public:
     SFZSample(const std::string& fileIn)
-			: loopStart(0), loopEnd(0), fileName(fileIn), sampleRate(44100.0f), loader(0), internalBuffer(0), sf2Start(0)
+			: loopStart(0), loopEnd(0), fileName(fileIn), sampleRate(44100.0f), loader(0), internalBuffer(0), sf2Start(0), sf2Length(0)
             {
                 fullyLoaded = false;
+                sampleOrder = 0;
+                
+                bumpSampleOrder();
             }
     SFZSample(double sampleRateIn)
-        : sampleLength(0), loopStart(0), loopEnd(0), loader(0), sampleRate(sampleRateIn), internalBuffer(0), sf2Start(0)
+        : sampleLength(0), loopStart(0), loopEnd(0), loader(0), sampleRate(sampleRateIn), internalBuffer(0), sf2Start(0), sf2Length(0)
         {
             // sf2's use this only?
-            fullyLoaded = true;
+            fullyLoaded = false;
+            sampleOrder = 0;
+            bumpSampleOrder();
         }
     ~SFZSample();
 
-    bool	preload(int numSamples);
+    bool	preload(int numSamples, bool bump = true);
     bool	load();
     void    unload();
     void    bumpSampleOrder();

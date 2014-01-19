@@ -29,13 +29,15 @@ SFZBaseAudioReader::SFZBaseAudioReader()
     myChannels = 1;
  	mySampleRate = 44100;
     buffer = 0;
-    maxLength = INT_MAX;
+    maxLength = INT32_MAX;
 }
 
 SFZBaseAudioReader::~SFZBaseAudioReader()
 {
-    
+    myChannels = 0;
+    mySampleRate = 0;
 }
+
 
 const char *SFZBaseAudioReader::getSummary()
 {
@@ -64,7 +66,7 @@ SFZWavAudioReader::SFZWavAudioReader()
     myBitsPerSample = 0;
     dataChunkPos = 0;
     myChannels = 1;
-    maxLength = 0;
+    maxLength = INT_MAX;
     
 };
 
@@ -73,10 +75,17 @@ SFZWavAudioReader::~SFZWavAudioReader()
     closeStream();
     
     if (myData)
+    {
         delete (myData);
+        myData = 0;
+    }
     
     if(buffer)
+    {
         delete buffer;
+        buffer = 0;
+    }
+
     
     //printf("freeing SampleData");
     
@@ -86,7 +95,7 @@ SFZBaseAudioReader *SFZWavAudioReader::createReaderForFull()
 {
 
     SFZWavAudioReader *newreader = new SFZWavAudioReader();
-    newreader->maxLength = 0;
+    newreader->maxLength = INT32_MAX;
     
     if(headerIsRead)
     {
@@ -114,6 +123,7 @@ SFZBaseAudioReader *SFZWavAudioReader::createReaderForFull()
     } else {
         newreader->myPath = myPath;
         newreader->headerIsRead = false;
+        newreader->maxLength = INT32_MAX;
         newreader->beginLoad();
         newreader->stream();
         // get some data loaded
@@ -243,7 +253,16 @@ void SFZWavAudioReader::readWAVData(ifstream &inFile, unsigned int startOffset, 
     if(!headerIsRead)
         return;
 
-    assert(buffer);
+//    assert(buffer);
+    if(!buffer)
+    {
+        maxLength = length;
+        
+        buffer = new SFZAudioBuffer(myChannels, maxLength);
+        buffer->setNumSamples(0);
+        buffer->clear();
+    }
+    
     if(startOffset >= maxLength)
     {
         // already done..
@@ -448,7 +467,12 @@ SFZOggAudioReader::~SFZOggAudioReader()
 {
     closeStream();
     
-    vorbisData = 0;
+    if(buffer)
+    {
+        delete buffer;
+        buffer = 0;
+    }
+
 }
 
 void SFZOggAudioReader::setFile(std::string fileName_, unsigned int maxLength_)
@@ -489,6 +513,7 @@ bool SFZOggAudioReader::beginLoad()
         {
             buffer = 0;
             closeStream();
+            return false;
         } else {
             
             if(maxLength > length)
@@ -501,6 +526,7 @@ bool SFZOggAudioReader::beginLoad()
                 buffer->clear();
             }
             
+            assert(buffer);
             stream();
             
         }
@@ -589,7 +615,7 @@ void SFZOggAudioReader::closeStream()
 SFZBaseAudioReader *SFZOggAudioReader::createReaderForFull()
 {
     SFZOggAudioReader *newreader = new SFZOggAudioReader();
-    newreader->maxLength = 0;
+    newreader->maxLength = UINT32_MAX;
     
     if(vorbisData)
     {
@@ -782,7 +808,7 @@ void SF2AudioReader::closeStream()
 SFZBaseAudioReader *SF2AudioReader::createReaderForFull()
 {
     SF2AudioReader *newreader = new SF2AudioReader();
-    newreader->maxLength = 0;
+    newreader->maxLength = INT32_MAX;
     
 
     newreader->buffer = new SFZAudioBuffer(1, waveLength);

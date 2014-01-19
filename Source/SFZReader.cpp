@@ -51,6 +51,7 @@ void SFZReader::read(const char* text, unsigned int length)
 	const char* end = text + length;
 	char c;
 
+    SFZRegion globalGroup;
 	SFZRegion curGroup;
 	SFZRegion curRegion;
 	SFZRegion* buildingRegion = NULL;
@@ -127,6 +128,7 @@ void SFZReader::read(const char* text, unsigned int length)
 						finishRegion(&curRegion);
                     
 					curGroup.clear();
+                    curGroup.copy(&globalGroup);
 					buildingRegion = &curGroup;
 					inControl = false;
                 }
@@ -138,7 +140,13 @@ void SFZReader::read(const char* text, unsigned int length)
 					curGroup.clear();
 					buildingRegion = NULL;
 					inControl = true;
-					}
+                }
+                else if (tag == "global")
+                {
+                    globalGroup.clear();
+                    buildingRegion = &globalGroup;
+                    inControl = false;
+                }
 				else
 					error("Illegal tag");
 				}

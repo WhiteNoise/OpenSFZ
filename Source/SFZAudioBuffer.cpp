@@ -11,6 +11,11 @@
 
 SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned int numSamples_)
 {
+    bufferSize = 0;
+    numSamples = 0;
+    numChannels = 0;
+    owned = false;
+    
     channels[0] = 0;
     channels[1] = 0;
     channelPtr[0] = 0;
@@ -49,6 +54,7 @@ SFZAudioBuffer::SFZAudioBuffer(const int numChannels_, const unsigned int numSam
 
 SFZAudioBuffer::SFZAudioBuffer(const SFZAudioBuffer &other)
 {
+
     owned = false;
     
     numChannels = other.numChannels;
@@ -73,6 +79,8 @@ SFZAudioBuffer::~SFZAudioBuffer()
             channelPtr[i] = 0;
             channels[i] = 0;
         }
+        
+        numChannels = 0;
     }
 }
 

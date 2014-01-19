@@ -11,6 +11,7 @@
 
 #include "../Source/stb_vorbis.h"
 
+#include "../Source/StringUtil.h"
 #include "../Source/Path.h"
 
 #include "../Source/SFZAudioBuffer.h"

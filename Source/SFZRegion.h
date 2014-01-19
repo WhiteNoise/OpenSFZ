@@ -33,6 +33,7 @@ class SFZRegion {
 		void	clearForSF2();
 		void	clearForRelativeSF2();
 		void	addForSF2(SFZRegion* other);
+        void    copy(SFZRegion *other);
 		void	sf2ToSFZ();
 		void	dump();
 

@@ -77,6 +77,40 @@ void SFZRegion::clearForRelativeSF2()
 	ampeg.sustain = 0.0;
 }
 
+// for <global> section
+void SFZRegion::copy(SFZRegion *other)
+{
+    lokey = other->lokey;
+    hikey = other->hikey;
+    xfinlokey = other->xfinlokey;
+    xfinhikey = other->xfinhikey;
+    xfoutlokey = other->xfoutlokey;
+    xfouthikey = other->xfouthikey;
+    
+    lovel = other->lovel;
+    hivel = other->hivel;
+    trigger = other->trigger;
+    off_by = other->off_by;
+    off_mode = other->off_mode;
+    
+    offset = other->offset;
+    end = other->end;
+    negative_end = other->negative_end;
+    loop_mode = other->loop_mode;
+    loop_start = other->loop_start;
+    loop_end = other->loop_end;
+    transpose = other->transpose;
+    tune = other->tune;
+    pitch_keycenter = other->pitch_keycenter;
+    pitch_keytrack = other->pitch_keytrack;
+    bend_up = other->bend_up;
+    bend_down = other->bend_down;
+    
+    volume = other->volume;
+    pan = other->pan;
+    amp_veltrack = other->amp_veltrack;
+}
+
 
 void SFZRegion::addForSF2(SFZRegion* other)
 {

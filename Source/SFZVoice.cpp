@@ -80,6 +80,7 @@ void SFZVoice::startNote(
     
     if(!region->sample->getFullyLoaded())
     {
+
         region->sample->load();
         
         sound->checkMemoryUsage();
@@ -90,9 +91,15 @@ void SFZVoice::startNote(
     
     if(!region->sample->getBuffer())
     {
-        killNote();
-        return;
+        region->sample->unload();
+        region->sample->load();
     }
+    
+//    if()
+//    {
+//        killNote();
+//        return;
+//    }
 
 	// Pitch.
 	curMidiNote = midiNoteNumber;

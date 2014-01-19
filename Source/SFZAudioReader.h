@@ -27,7 +27,7 @@ public:
     SFZBaseAudioReader();
     virtual ~SFZBaseAudioReader();
 
-    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX) = 0;
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT32_MAX) = 0;
     
     // start pre-loading.. open file etc.
     virtual bool beginLoad() = 0;
@@ -43,6 +43,8 @@ public:
     virtual SFZBaseAudioReader *createReaderForFull() = 0;
     
     const char *getSummary();
+    
+    bool isValid() { return myChannels != 0; };
     
     int getNumChannels() { return myChannels; };
     int getSampleRate() { return mySampleRate; };
@@ -183,7 +185,7 @@ public:
     SFZOggAudioReader();
     virtual ~SFZOggAudioReader();
     
-    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX);
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT32_MAX);
     
     // start pre-loading.. open file etc.
     virtual bool beginLoad();
@@ -216,7 +218,7 @@ public:
     SF2AudioReader();
     virtual ~SF2AudioReader();
     
-    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT_MAX);
+    virtual void setFile(std::string fileName_, unsigned int maxLength_ = INT32_MAX);
     
     virtual void setWaveChunkPosition(unsigned int waveOffset_, unsigned int waveLength_);
     

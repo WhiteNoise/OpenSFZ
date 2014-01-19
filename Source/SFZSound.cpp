@@ -164,12 +164,19 @@ void SFZSound::checkMemoryUsage()
     atomic_t memoryUsage = SFZAudioReaderManager::getInstance()->getMemoryUsage();
     unsigned int memoryLeft = getFreeMemory();
     
+#ifdef DEBUG
     printf("Memory left %u, usage: %u\n", memoryLeft, memoryUsage);
-    
+#endif
     //memoryLeft < 30000000
-    while(memoryUsage > 30000000)
+    
+    // Pick an old sample and release it..
+    // FIXME: make this configurable?
+    
+    int attemptsLeft = 20;
+    
+    while(memoryUsage > 30000000 && (attemptsLeft--) > 0)    // while?
     {
-        unsigned int oldest = INT_MAX;
+        unsigned int oldest = UINT_MAX;
         SFZSample *oldestSample = NULL;
         map<string,SFZSample*>::iterator oldestIter;
         
@@ -177,7 +184,9 @@ void SFZSound::checkMemoryUsage()
         {
             SFZSample* sample = iter->second;
             
-            if(sample->getSampleOrder() < oldest)
+            // check to see if it's still loaded, and if it's the oldest
+            if(sample->getBuffer() && sample->getSampleOrder() < oldest &&
+               sample->getBuffer()->getBufferSize() > 2048)
             {
                 oldestSample = sample;
                 oldestIter = iter;
@@ -186,15 +195,17 @@ void SFZSound::checkMemoryUsage()
         }
         
         if(oldestSample) {
-            if(oldestSample->getBuffer())
-                memoryUsage -= oldestSample->getBuffer()->getBufferSize() * 4 * oldestSample->getBuffer()->getNumChannels();
+            memoryUsage -= oldestSample->getBuffer()->getBufferSize() * 4 * oldestSample->getBuffer()->getNumChannels();
             
+            //FIXME: I suppose we could also find a way to truncate the full sample down and free the memory instead.
             oldestSample->unload();
-            
-            samples.erase(oldestIter);
-        }
+            oldestSample->preload(1024, true);
 
-        assert(oldestSample);
+            
+        } else {
+            // could happen if there are no samples left..
+            return;
+        }
 
     }
 }

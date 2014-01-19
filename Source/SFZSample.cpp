@@ -9,26 +9,41 @@ void SFZSample::bumpSampleOrder()
     sampleOrderIndex++;
     sampleOrder = sampleOrderIndex;
     
+    if(sampleOrderIndex >= UINT_MAX)
+        sampleOrderIndex = 0;
+    
 }
 
 // FIXME: maybe the amount that we preload can depend on how many samples there are and how much memory it would take up..
 // Also, maybe I could keep the 'header' info (length etc) saved, just not the wav buffer.
-bool SFZSample::preload(int numSamples)
+bool SFZSample::preload(int numSamples, bool bump)
 {
-    bumpSampleOrder();
+    if(bump)
+        bumpSampleOrder();
     
     SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
+    Path filePath(fileName);
     
-    loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
-    loader->setFile(fileName, numSamples);
-    
-    if(Path(fileName).getExtension() == "sf2")
+    if(filePath.exists())
     {
-        ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+        loader = SFZAudioReaderManager::createReader(filePath.getExtension());
+        if(loader)
+        {
+            loader->setFile(fileName, numSamples);
+            
+            if(filePath.getExtension() == "sf2")
+            {
+                ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+            }
+
+
+            manager->addReader(loader);
+        }
+        
+        assert(loader);
+    } else {
+        printf("File not found %s\n", fileName.c_str());
     }
-
-
-    manager->addReader(loader);
     fullyLoaded = false;
     
 	return true;
@@ -36,56 +51,81 @@ bool SFZSample::preload(int numSamples)
 
 bool SFZSample::load()
 {
+    if(fullyLoaded)
+        return true;
+    
     bumpSampleOrder();
     bool ok = false;
-    // Check for case where we preloaded the whole file? 
+    fullyLoaded = false;
+    
+    // Check for case where we preloaded the whole file?
+    Path filePath(fileName);
+    
 #ifdef SFZ_NO_STREAMING
     SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
     
-    loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
-    loader->setFile(fileName, INT32_MAX);
-    
-    if(Path(fileName).getExtension() == "sf2")
+    if(filePath.exists())
     {
-        ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
-    }
-
-    if(loader->beginLoad())
-    {
-        ok = true;
-        while(!loader->isStreamFinished())
+        loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
+        loader->setFile(fileName, INT32_MAX);
+        
+        if(filePath.getExtension() == "sf2")
         {
-            loader->stream();
+            ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
         }
-        loader->closeStream();
+
+        if(loader->beginLoad())
+        {
+            ok = true;
+            while(!loader->isStreamFinished())
+            {
+                loader->stream();
+            }
+            loader->closeStream();
+        }
     }
     
 #else
     if(loader)
     {
+        // preloaded -> loaded
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         
         SFZBaseAudioReader *newloader = loader->createReaderForFull();
-        manager->releaseReader(loader);
-        loader = newloader;
-        manager->addReader(loader);
-        ok = true;
+        if(newloader)
+        {
+            manager->releaseReader(loader);
+            loader = newloader;
+            manager->addReader(loader);
+            ok = true;
+        }
     } else {
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         
-        loader = SFZAudioReaderManager::createReader(Path(fileName).getExtension());
-        
-        loader->setFile(fileName, INT_MAX);
-        if(Path(fileName).getExtension() == "sf2")
+        if(filePath.exists())
         {
-            ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
-        }
 
-        
-        // open the file here?
-        ok = loader->beginLoad();
-        
-        manager->addReader(loader);
+            loader = SFZAudioReaderManager::createReader(filePath.getExtension());
+            
+            if(loader)
+            {
+                loader->setFile(fileName, INT32_MAX);
+                if(Path(fileName).getExtension() == "sf2")
+                {
+                    ((SF2AudioReader *)loader)->setWaveChunkPosition(sf2Start, sf2Length);
+                }
+
+                
+                // open the file here?
+                ok = loader->beginLoad();
+                if(ok)
+                    manager->addReader(loader);
+                else
+                    delete loader;
+            }
+        } else {
+            printf("File not found %s\n", fileName.c_str());
+        }
     }
 #endif
     
@@ -105,6 +145,7 @@ void SFZSample::unload()
         SFZAudioReaderManager *manager = SFZAudioReaderManager::getInstance();
         manager->releaseReader(loader);
     
+        fullyLoaded = false;
         loader = 0;
     } else if(internalBuffer)
     {

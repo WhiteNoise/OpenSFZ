@@ -1,4 +1,5 @@
 #include "Path.h"
+#include "StringUtil.h"
 #include "InputStream.h"
 
 #include <algorithm>
@@ -8,9 +9,11 @@ const std::string Path::separatorString("/");
 
 Path::Path(std::string sz)
 {
-	fullPath = sz;
+	fullPath = stringTrim(sz, " \t\r");
 
 	std::replace( fullPath.begin(), fullPath.end(), '\\', '/');
+    
+    
 }
 
 Path::Path(const Path &other)

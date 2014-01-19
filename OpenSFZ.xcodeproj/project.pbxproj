@@ -118,6 +118,10 @@
 		A7CB313F1728AEC000F34741 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB313D1728AEBE00F34741 /* InputStream.h */; };
 		A7CB31421728B24F00F34741 /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CB31401728B24B00F34741 /* Path.cpp */; };
 		A7CB31431728B24F00F34741 /* Path.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CB31411728B24C00F34741 /* Path.h */; };
+		A7D37A4C181D969400E8F027 /* StringUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D37A4B181D969400E8F027 /* StringUtil.h */; };
+		A7D37A4D181D969400E8F027 /* StringUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D37A4B181D969400E8F027 /* StringUtil.h */; };
+		A7D37A4F181D96BD00E8F027 /* StringUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7D37A4E181D96BD00E8F027 /* StringUtil.cpp */; };
+		A7D37A50181D96C600E8F027 /* StringUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7D37A4E181D96BD00E8F027 /* StringUtil.cpp */; };
 		A7F17203172A0A6D00F17088 /* OpenSFZ.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F17202172A0A6D00F17088 /* OpenSFZ.h */; };
 /* End PBXBuildFile section */
 
@@ -179,6 +183,8 @@
 		A7CB313D1728AEBE00F34741 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputStream.h; sourceTree = "<group>"; };
 		A7CB31401728B24B00F34741 /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path.cpp; sourceTree = "<group>"; };
 		A7CB31411728B24C00F34741 /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
+		A7D37A4B181D969400E8F027 /* StringUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtil.h; sourceTree = "<group>"; };
+		A7D37A4E181D96BD00E8F027 /* StringUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtil.cpp; sourceTree = "<group>"; };
 		A7F17202172A0A6D00F17088 /* OpenSFZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenSFZ.h; path = Include/OpenSFZ.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -266,6 +272,8 @@
 				A7CB309C17261D5C00F34741 /* WinTypes.h */,
 				A73D91D0172D639700E71ACA /* SFZAudioReaderManager.cpp */,
 				A73D91D1172D639800E71ACA /* SFZAudioReaderManager.h */,
+				A7D37A4B181D969400E8F027 /* StringUtil.h */,
+				A7D37A4E181D96BD00E8F027 /* StringUtil.cpp */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -313,6 +321,7 @@
 				A710E2CA1735580C008CE99F /* SF2Sound.h in Headers */,
 				A710E2CB1735580C008CE99F /* SFZEG.h in Headers */,
 				A710E2CC1735580C008CE99F /* SFZReader.h in Headers */,
+				A7D37A4D181D969400E8F027 /* StringUtil.h in Headers */,
 				A710E2CD1735580C008CE99F /* SFZRegion.h in Headers */,
 				A710E2CE1735580C008CE99F /* SFZSample.h in Headers */,
 				A710E2CF1735580C008CE99F /* SFZSound.h in Headers */,
@@ -356,6 +365,7 @@
 				A7CB30B317261D5C00F34741 /* SF2Sound.h in Headers */,
 				A7CB30B717261D5C00F34741 /* SFZEG.h in Headers */,
 				A7CB30BD17261D5C00F34741 /* SFZReader.h in Headers */,
+				A7D37A4C181D969400E8F027 /* StringUtil.h in Headers */,
 				A7CB30BF17261D5C00F34741 /* SFZRegion.h in Headers */,
 				A7CB30C117261D5C00F34741 /* SFZSample.h in Headers */,
 				A7CB30C317261D5C00F34741 /* SFZSound.h in Headers */,
@@ -452,6 +462,7 @@
 				A710E2A81735580C008CE99F /* SF2Reader.cpp in Sources */,
 				A710E2A91735580C008CE99F /* SF2Sound.cpp in Sources */,
 				A710E2AA1735580C008CE99F /* SFZEG.cpp in Sources */,
+				A7D37A50181D96C600E8F027 /* StringUtil.cpp in Sources */,
 				A710E2AB1735580C008CE99F /* SFZReader.cpp in Sources */,
 				A710E2AC1735580C008CE99F /* SFZRegion.cpp in Sources */,
 				A710E2AD1735580C008CE99F /* SFZSample.cpp in Sources */,
@@ -479,6 +490,7 @@
 				A7CB30B017261D5C00F34741 /* SF2Reader.cpp in Sources */,
 				A7CB30B217261D5C00F34741 /* SF2Sound.cpp in Sources */,
 				A7CB30B617261D5C00F34741 /* SFZEG.cpp in Sources */,
+				A7D37A4F181D96BD00E8F027 /* StringUtil.cpp in Sources */,
 				A7CB30BC17261D5C00F34741 /* SFZReader.cpp in Sources */,
 				A7CB30BE17261D5C00F34741 /* SFZRegion.cpp in Sources */,
 				A7CB30C017261D5C00F34741 /* SFZSample.cpp in Sources */,

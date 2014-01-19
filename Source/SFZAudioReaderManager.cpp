@@ -49,51 +49,31 @@ void SFZAudioReaderManager::releaseReader(SFZBaseAudioReader *r)
 // process any readers..
 void SFZAudioReaderManager::process()
 {
-    while(freedReaders.canRead())
-    {
-        SFZBaseAudioReader *r = freedReaders.get();
-        
-        atomic_t _memUsage = memoryUsage;
-        _memUsage -= r->buffer->getBufferSize() * 4 * r->getNumChannels();
-        memoryUsage = _memUsage;
-        
-        r->closeStream();
-        
-        std::vector<SFZBaseAudioReader *>::iterator iter = find(readers.begin(), readers.end(), r);
-                
-        if(iter != readers.end())
-            readers.erase(iter);
-        
-        iter = find(completeReaders.begin(), completeReaders.end(), r);
-        
-        if(iter != completeReaders.end())
-            completeReaders.erase(iter);
 
-        delete r;
-    }
     
     while(newReaders.canRead())
     {
         SFZBaseAudioReader *r = newReaders.get();
-        
-        if(r->beginLoad())
+        if(r->isValid())
         {
-            r->stream();
-            readers.push_back(r);
-            
-            atomic_t _memUsage = memoryUsage;
-            
-            _memUsage += r->buffer->getBufferSize() * 4 * r->getNumChannels();
-            
-            memoryUsage = _memUsage;
-            
-            
-        } else {
-            // stream did not load
-            sfzDebugPrint("Error, stream didn't load");
-            printf(r->getPath().c_str());
-            r->closeStream();
-            completeReaders.push_back(r);
+            if(r->beginLoad())
+            {
+                r->stream();
+                readers.push_back(r);
+                
+                atomic_t _memUsage = memoryUsage;
+                
+                _memUsage += r->buffer->getBufferSize() * 4 * r->getNumChannels();
+                
+                memoryUsage = _memUsage;
+                
+                
+            } else {
+                // stream did not load
+                sfzDebugPrint("Error, stream didn't load");
+                r->closeStream();
+                completeReaders.push_back(r);
+            }
         }
     }
     
@@ -115,6 +95,32 @@ void SFZAudioReaderManager::process()
             iter2++;
         }
     }
+    
+    while(freedReaders.canRead())
+    {
+        SFZBaseAudioReader *r = freedReaders.get();
+        
+        if(r->buffer)
+        {
+            atomic_t _memUsage = memoryUsage;
+            _memUsage -= (r->buffer->getBufferSize() * 4 * r->getNumChannels());
+            memoryUsage = _memUsage;
+        }
+        
+        r->closeStream();
+        
+        std::vector<SFZBaseAudioReader *>::iterator iter = find(readers.begin(), readers.end(), r);
+        
+        if(iter != readers.end())
+            readers.erase(iter);
+        
+        iter = find(completeReaders.begin(), completeReaders.end(), r);
+        
+        if(iter != completeReaders.end())
+            completeReaders.erase(iter);
+        
+        delete r;
+    }
 }
 
 
@@ -134,6 +140,14 @@ SFZAudioReaderManager::~SFZAudioReaderManager()
 
     }
     readers.clear();
+
+    for(int i=0; i<completeReaders.size(); i++)
+    {
+        delete completeReaders[i];
+        
+    }
+    completeReaders.clear();
+
 }
 
 SFZBaseAudioReader *SFZAudioReaderManager::createReader(const std::string &extension)
