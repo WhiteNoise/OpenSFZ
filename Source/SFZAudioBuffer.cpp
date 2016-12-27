@@ -58,14 +58,14 @@ SFZAudioBuffer::SFZAudioBuffer(const SFZAudioBuffer &other)
     owned = false;
     
     numChannels = other.numChannels;
-    numSamples = other.numSamples;
+    numSamples = other.numSamples.load(std::memory_order_relaxed);
     
     for(int i=0; i<numChannels; i++)
     {
         channelPtr[i] = channels[i] = other.channels[i];
     }
     
-    bufferSize = numSamples;
+    bufferSize = numSamples.load(std::memory_order_relaxed);
     
 }
 
@@ -112,11 +112,11 @@ void SFZAudioBuffer::initializeWith(const SFZAudioBuffer &other)
     
 
     
-    numSamples = other.numSamples;
+    numSamples = other.numSamples.load(std::memory_order_relaxed);
     
     if(numSamples > bufferSize)
     {
-        numSamples = bufferSize;
+        numSamples = bufferSize.load(std::memory_order_relaxed);
     }
     
     
@@ -133,7 +133,7 @@ void SFZAudioBuffer::initializeWith(const SFZAudioBuffer &other)
     
 }
 
-void SFZAudioBuffer::setNumSamples(atomic_t n)
+void SFZAudioBuffer::setNumSamples(unsigned int n)
 {
     numSamples = n;
 }

@@ -31,11 +31,11 @@ public:
     void process();
     
     // attempt to estimate how much memory we're using
-    atomic_t getMemoryUsage() { return memoryUsage; };
+    int getMemoryUsage() { return memoryUsage; };
     
     static SFZBaseAudioReader *createReader(const std::string &extension);
 private:
-    atomic_t memoryUsage;
+    int memoryUsage;
     SFZAudioReaderManager();
     ~SFZAudioReaderManager();
     

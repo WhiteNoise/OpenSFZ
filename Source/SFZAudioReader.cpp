@@ -365,7 +365,7 @@ void SFZWavAudioReader::readWAVData(ifstream &inFile, unsigned int startOffset, 
     currentReadOffset += samplesToRead;
     buffer->setNumSamples(currentReadOffset);
     
-    delete myData;
+    free(myData);
     myData = 0;
 
 }
@@ -767,7 +767,7 @@ bool SF2AudioReader::stream()
     
 	// Read and convert.
 	short shortBuffer[1024];
-	unsigned long samplesLeft = maxLength - currentReadOffset;
+	unsigned int samplesLeft = maxLength - currentReadOffset;
     
     // only read 1024 at a time.
     if(samplesLeft > 1024)
@@ -779,7 +779,7 @@ bool SF2AudioReader::stream()
     currentFile->read(shortBuffer, samplesLeft * sizeof(short));
     
     // Convert from signed 16-bit to float.
-    unsigned long samplesToConvert = samplesLeft;
+    unsigned int samplesToConvert = samplesLeft;
     short* in = shortBuffer;
     for (; samplesToConvert > 0; --samplesToConvert) {
         // If we ever need to compile for big-endian platforms, we'll need to
@@ -787,7 +787,7 @@ bool SF2AudioReader::stream()
         *out++ = *in++ / 32767.0;
     }
     
-    atomic_t newOffset = currentReadOffset + samplesLeft;
+    unsigned int newOffset = currentReadOffset + samplesLeft;
     currentReadOffset = newOffset;
     
     if(buffer->getNumSamples() < currentReadOffset)

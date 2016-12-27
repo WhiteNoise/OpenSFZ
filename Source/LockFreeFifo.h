@@ -1,16 +1,12 @@
 
-/*
- NUI3 - C++ cross-platform GUI framework for OpenGL based applications
- Copyright (C) 2002-2003 Sebastien Metrot
- */
 
 #pragma once
-#include "SFZCommon.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		LockFreeFifo
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<class T> class LockFreeFifo : NonCopyable
+
+#include <vector>
+
+
+template<class T> class LockFreeFifo
 {
 public:
     LockFreeFifo (unsigned int bufsz) : mReadIdx(0), mWriteIdx(0), mBuffer(bufsz)
@@ -19,26 +15,28 @@ public:
     
     T get(void)
     {
+        
         //	throw runtime_error ("lock free fifo underrun");
+        unsigned int readIndex = mReadIdx.load(std::memory_order_relaxed);
         
-        T result = mBuffer[mReadIdx];
+        T result = mBuffer[readIndex];
         
-        if ((mReadIdx + 1) >= mBuffer.size())
-            mReadIdx = 0;
+        if ((readIndex + 1) >= mBuffer.size())
+            readIndex = 0;
         else
-            mReadIdx = mReadIdx + 1;
+            readIndex = readIndex + 1;
+        
+        mReadIdx = readIndex;
         
         return result;
     }
     
     void put(T element)
     {
-        unsigned int newIdx;
+        unsigned int newIdx = mWriteIdx.load(std::memory_order_relaxed) + 1;
         
-        if ((mWriteIdx + 1) >= mBuffer.size())
+        if (newIdx >= mBuffer.size())
             newIdx = 0;
-        else
-            newIdx = mWriteIdx + 1;
         
         //throw runtime_error ("lock free fifo overrun");
         
@@ -49,19 +47,18 @@ public:
     
     bool canRead() const
     {
-        return mReadIdx != mWriteIdx;
+        return mReadIdx != mWriteIdx.load(std::memory_order_relaxed);
     }
     
     bool canWrite() const
     {
-        unsigned int newIdx;
+        unsigned int newIdx = mWriteIdx.load(std::memory_order_relaxed) + 1;
         
-        if ((mWriteIdx + 1) >= mBuffer.size())
+        if (newIdx >= mBuffer.size())
             newIdx = 0;
-        else
-            newIdx = mWriteIdx + 1;
         
-        return newIdx != mReadIdx;
+        
+        return newIdx != mReadIdx.load(std::memory_order_relaxed);
     }
     
 private:

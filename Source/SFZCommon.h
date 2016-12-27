@@ -25,8 +25,10 @@
 
 #include "stb_vorbis.h"
 
+
+typedef std::atomic_int atomic_t;
+
 #ifdef __APPLE__
-typedef volatile int32_t atomic_t;
 
 #include "TargetConditionals.h"
 
@@ -44,9 +46,6 @@ typedef volatile int32_t atomic_t;
 
 #endif
 
-#ifdef _WIN32_
-typedef volatile uint32 atomic_t;
-#endif
 
 typedef long int64;
 

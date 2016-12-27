@@ -161,8 +161,8 @@ SFZRegion* SFZSound::getRegionFor(
 
 void SFZSound::checkMemoryUsage()
 {
-    atomic_t memoryUsage = SFZAudioReaderManager::getInstance()->getMemoryUsage();
-    unsigned int memoryLeft = getFreeMemory();
+    unsigned int memoryUsage = SFZAudioReaderManager::getInstance()->getMemoryUsage();
+//    unsigned int memoryLeft = getFreeMemory();
     
 #ifdef DEBUG
     printf("Memory left %u, usage: %u\n", memoryLeft, memoryUsage);

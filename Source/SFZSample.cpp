@@ -120,8 +120,10 @@ bool SFZSample::load()
                 ok = loader->beginLoad();
                 if(ok)
                     manager->addReader(loader);
-                else
+                else {
                     delete loader;
+                    loader = NULL;
+                }
             }
         } else {
             printf("File not found %s\n", fileName.c_str());
@@ -129,11 +131,21 @@ bool SFZSample::load()
     }
 #endif
     
-    fullyLoaded = true;
-    sampleRate = loader->getSampleRate();
+
     sampleLength = 0;
-    loopStart = loader->getLoopStart();
-    loopEnd = loader->getLoopEnd();;
+    
+    if(loader)
+    {
+        fullyLoaded = true;
+
+        sampleRate = loader->getSampleRate();
+        loopStart = loader->getLoopStart();
+        loopEnd = loader->getLoopEnd();
+    } else {
+        sampleRate = 44100;
+        loopStart = 0;
+        loopEnd = 0;
+    }
     
 	return ok;
 }

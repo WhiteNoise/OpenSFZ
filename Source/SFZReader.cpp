@@ -41,7 +41,7 @@ void SFZReader::read(const Path& file)
 
 	read((const char*) buffer, (unsigned int)length);
     
-    delete buffer;
+    delete[] buffer;
 }
 
 
@@ -49,7 +49,7 @@ void SFZReader::read(const char* text, unsigned int length)
 {
 	const char* p = text;
 	const char* end = text + length;
-	char c;
+	char c = '\0';
 
     SFZRegion globalGroup;
 	SFZRegion curGroup;
@@ -71,15 +71,33 @@ void SFZReader::read(const char* text, unsigned int length)
 
 		// Check if it's a comment line.
 		if (c == '/') {
-			// Skip to end of line.
-			while (p < end) {
-				c = *++p;
-				if (c == '\n' || c == '\r')
-					break;
-				}
-			p = handleLineEnd(p);
-			continue;
-			}
+            // /* type of coment
+            c = *++p;
+            if(p < end && c == '*')
+            {
+                // Skip to end of line.
+                while (p < end) {
+                    c = *++p;
+                    
+                    if( c == '*' && p + 1 < end && *(p+1) == '/')
+                    {
+                        p = p + 2;
+                        break;
+                    }
+                }
+                continue;
+            } else {
+            
+                // Skip to end of line.
+                while (p < end) {
+                    c = *++p;
+                    if (c == '\n' || c == '\r')
+                        break;
+                }
+                p = handleLineEnd(p);
+                continue;
+            }
+        }
 
 		// Check if it's a blank line.
 		if (c == '\r' || c == '\n') {

@@ -43,7 +43,7 @@ public:
     
     void initializeWith(const SFZAudioBuffer &other);
     
-    void setNumSamples(atomic_t n);
+    void setNumSamples(unsigned int n);
     
     void clear();
 private:

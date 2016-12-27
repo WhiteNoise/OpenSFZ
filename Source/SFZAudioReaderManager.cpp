@@ -61,7 +61,7 @@ void SFZAudioReaderManager::process()
                 r->stream();
                 readers.push_back(r);
                 
-                atomic_t _memUsage = memoryUsage;
+                int _memUsage = memoryUsage;
                 
                 _memUsage += r->buffer->getBufferSize() * 4 * r->getNumChannels();
                 
@@ -102,7 +102,7 @@ void SFZAudioReaderManager::process()
         
         if(r->buffer)
         {
-            atomic_t _memUsage = memoryUsage;
+            int _memUsage = memoryUsage;
             _memUsage -= (r->buffer->getBufferSize() * 4 * r->getNumChannels());
             memoryUsage = _memUsage;
         }
